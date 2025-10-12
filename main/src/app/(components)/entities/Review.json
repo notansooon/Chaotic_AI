@@ -1,0 +1,77 @@
+{
+  "name": "Review",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Review task title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Review task description"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "code_review",
+        "ui_ux_feedback",
+        "security_check",
+        "general_feedback"
+      ],
+      "description": "Type of review"
+    },
+    "project_id": {
+      "type": "string",
+      "description": "Associated project ID"
+    },
+    "requester": {
+      "type": "string",
+      "description": "User ID who requested the review"
+    },
+    "reviewer": {
+      "type": "string",
+      "description": "User ID of assigned reviewer"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "in_progress",
+        "completed",
+        "closed"
+      ],
+      "default": "open",
+      "description": "Review status"
+    },
+    "bounty": {
+      "type": "number",
+      "description": "Bounty amount for the review"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Review tags"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "File or URL to review"
+    },
+    "feedback": {
+      "type": "string",
+      "description": "Review feedback"
+    },
+    "rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Review rating"
+    }
+  },
+  "required": [
+    "title",
+    "type",
+    "requester"
+  ]
+}

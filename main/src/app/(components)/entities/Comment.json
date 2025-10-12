@@ -1,0 +1,34 @@
+[
+  {
+    "id": "c1",
+    "discussionId": "d1",
+    "author": "frank@example.com",
+    "content": "One tip for React performance is to use `React.memo` for pure components.",
+    "created_date": "2025-09-15T15:10:00Z",
+    "upvotes": 5
+  },
+  {
+    "id": "c2",
+    "discussionId": "d1",
+    "author": "grace@example.com",
+    "content": "Also try splitting components with dynamic `import()` so only the necessary code loads.",
+    "created_date": "2025-09-15T16:05:00Z",
+    "upvotes": 8
+  },
+  {
+    "id": "c3",
+    "discussionId": "d2",
+    "author": "henry@example.com",
+    "content": "Rust is nice, but compile times are slower than Go. Depends on your priorities.",
+    "created_date": "2025-09-16T10:20:00Z",
+    "upvotes": 12
+  },
+  {
+    "id": "c4",
+    "discussionId": "d4",
+    "author": "ivy@example.com",
+    "content": "Async/await is cleaner for sequential code, but I still use Promises for `.map()` over arrays.",
+    "created_date": "2025-09-18T11:30:00Z",
+    "upvotes": 3
+  }
+]

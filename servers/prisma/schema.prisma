@@ -1,0 +1,151 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+  
+}
+
+datasource db {
+  provider = "postgresql"          
+  url      = env("DATABASE_URL")
+}
+
+enum Complexity {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum ItemStatus {
+  OPEN
+  CLAIMED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String
+  emailVerified Boolean
+  image         String?
+  createdAt     DateTime
+  updatedAt     DateTime
+  sessions      Session[]
+  accounts      Account[]
+
+
+  // Shown on cards next to author
+  rating     Float    @default(0)
+  reviews    Int      @default(0)
+
+  // authored items (one-to-many)
+  items         Item[] @relation("AuthorItems")
+
+  // items this user is currently reviewing (claimed)
+  claimedItems  Item[] @relation("ClaimedItems")
+
+  // bookmarks / saved items (many-to-many via join)
+  saved         UserSavedItem[]
+
+  @@index([createdAt])
+
+  @@unique([email])
+  @@map("user")
+}
+
+
+model Item {
+  id         String      @id @default(cuid())
+
+  title      String
+  brief      String
+  bountyUSD  Int
+
+  // Prefer a real deadline; compute timeLeft in your API
+  expiresAt  DateTime?
+
+  complexity Complexity
+  stack      String[]                
+  stats      Json?                   
+
+  status     ItemStatus  @default(OPEN)
+
+  // author (who posted it)
+  authorId   String
+  author     User        @relation("AuthorItems", fields: [authorId], references: [id], onDelete: Cascade)
+
+  // claiming (who is currently reviewing it)
+  claimedById String?
+  claimedBy   User?       @relation("ClaimedItems", fields: [claimedById], references: [id])
+  claimedAt   DateTime?
+
+  // bookmarks back-relation (who saved this item)
+  savedBy    UserSavedItem[]
+
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@index([createdAt])
+  @@index([bountyUSD])
+  @@index([status])
+  @@index([complexity])
+  @@index([authorId])
+  @@index([claimedById])
+}
+
+model UserSavedItem {
+  // explicit join table for per-user "saved" flag
+  userId    String
+  itemId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@id([userId, itemId])     
+  @@index([createdAt])
+}
+
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}

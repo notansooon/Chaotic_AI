@@ -1,0 +1,47 @@
+[
+  {
+    "id": "d1",
+    "title": "Best practices for React performance",
+    "content": "What are some good techniques to optimize React apps for speed? I've been running into slow renders.",
+    "tags": ["react", "performance", "frontend"],
+    "upvotes": 12,
+    "created_date": "2025-09-15T14:32:00Z",
+    "author": "alice@example.com"
+  },
+  {
+    "id": "d2",
+    "title": "Is Rust worth learning for web backend?",
+    "content": "I keep hearing about Axum and Actix. Curious if it’s practical compared to Node.js or Go for building production APIs.",
+    "tags": ["rust", "backend", "webdev"],
+    "upvotes": 25,
+    "created_date": "2025-09-16T09:10:00Z",
+    "author": "bob@example.com"
+  },
+  {
+    "id": "d3",
+    "title": "Difference between Docker and Podman?",
+    "content": "Trying to understand if Podman is a drop-in replacement for Docker or if there are limitations when using it in dev workflows.",
+    "tags": ["docker", "containers", "devops"],
+    "upvotes": 8,
+    "created_date": "2025-09-17T20:45:00Z",
+    "author": "charlie@example.com"
+  },
+  {
+    "id": "d4",
+    "title": "Async/await vs Promises in modern JS",
+    "content": "Do people still use raw Promises, or is everything async/await now? Are there situations where Promises are better?",
+    "tags": ["javascript", "async", "promises"],
+    "upvotes": 30,
+    "created_date": "2025-09-18T11:00:00Z",
+    "author": "diana@example.com"
+  },
+  {
+    "id": "d5",
+    "title": "Tips for preparing for system design interviews?",
+    "content": "What resources helped you the most? Looking for practical guides, mock interview advice, and exercises.",
+    "tags": ["interview", "system-design", "career"],
+    "upvotes": 42,
+    "created_date": "2025-09-19T08:25:00Z",
+    "author": "edward@example.com"
+  }
+]
