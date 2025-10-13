@@ -1,5 +1,5 @@
 "use client";
-
+import { User } from "@/app/(components)/entities/User";
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -19,6 +19,7 @@ import {
   FileCode
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ProfileDropdown from "./(components)/layout/ProfileDropdown";
 
 const navSections = [
   {
@@ -65,8 +66,11 @@ export default function Layout({ children, currentPageName }) {
     );
   };
 
+
+  
+
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="h-screen flex bg-gray-50 overflow-hidden">
       {/* Mobile Menu Button */}
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <Button
@@ -145,15 +149,9 @@ export default function Layout({ children, currentPageName }) {
 
           {/* User Info */}
           <div className="border-t border-gray-200 p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-semibold text-sm">AD</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">Admin User</p>
-                <p className="text-xs text-gray-500 truncate">admin@dashboard.com</p>
-              </div>
-            </div>
+            
+                <ProfileDropdown />
+              
           </div>
         </div>
       </aside>
@@ -167,7 +165,7 @@ export default function Layout({ children, currentPageName }) {
       )}
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden">
         {children}
       </main>
     </div>

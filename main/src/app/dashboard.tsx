@@ -8,10 +8,12 @@ import {
   Activity,
   Warehouse,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Sigma
 } from "lucide-react";
 import UsageChart from "./(components)/dashboard/UsageChart";
 import ResourceTable from "./(components)/dashboard/ResourceTable";
+import { User }  from "./(components)/entities/User";
 
 type Resource = {
   id: string;
@@ -123,6 +125,8 @@ const generateChartData = () => {
 };
 
 export default function Dashboard() {
+
+   
   const chartData = useMemo(() => generateChartData(), []);
   const resources = sampleResources;
   const garages = sampleGarages;
@@ -137,7 +141,30 @@ export default function Dashboard() {
     (sum, r) => sum + (r.memory_usage ?? 0),
     0
   );
+  const signIn = User.me()
+  console.log("User.me(): ", signIn); 
 
+
+  if (!signIn) {
+    return (
+      <>
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="bg-white p-8 rounded-lg shadow-lg text-center">
+            <Sigma className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
+            <p className="text-gray-600 mb-6">You must be signed in to view the dashboard.</p>
+            <a
+              href="/login"
+              className="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Go to Login
+            </a>
+          </div>
+        </div>
+      
+      </>
+    );
+  }
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="w-full px-6 py-8">
