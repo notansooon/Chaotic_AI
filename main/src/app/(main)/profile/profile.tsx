@@ -1,9 +1,9 @@
 "use client"
 import React, { useState, useEffect, useCallback } from "react";
-import { User } from "../(components)/entities/User";
-import Project from "../(components)/entities/Project.json";
+import { User } from "../../(components)/entities/User";
+import Project from "../../(components)/entities/Project.json";
 
-import PeerPoint  from "../(components)/entities/PeerPoint.json";
+import PeerPoint  from "../../(components)/entities/PeerPoint.json";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
@@ -11,9 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Loader2, User as UserIcon, Building, MapPin, Link as LinkIcon, Github, Linkedin, Sparkles, FolderOpen, MessageSquare, Award, GitBranch, Calendar as CalendarIcon, Star, Pencil } from "lucide-react";
 import { motion } from "framer-motion";
 
-import CalendarTab from "../(components)/profile/CalenderTab";
-import ProjectCard from "../(components)/dashboard/ProjectCard";
-import EditProfileModal from "../(components)/profile/EditProfileModal";
+import CalendarTab from "../../(components)/profile/CalenderTab";
+import ProjectCard from "../../(components)/dashboard/ProjectCard";
+import EditProfileModal from "../../(components)/profile/EditProfileModal";
 
 
 type stats = {

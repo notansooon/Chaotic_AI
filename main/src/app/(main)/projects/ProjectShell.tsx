@@ -1,10 +1,10 @@
 "use client";
 import React, { useState, useEffect, useCallback, use } from "react";
-import Project from "../(components)/entities/Project.json"
+import Project from "../../(components)/entities/Project.json"
 
 
 
-import { InvokeLLM } from "../(components)/integration/core"
+import { InvokeLLM } from "../../(components)/integration/core"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -13,8 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Filter, ExternalLink, Users, Star, GitBranch, Github, Globe } from "lucide-react";
 import { motion } from "framer-motion";
 
-import ProjectCard from "../(components)/dashboard/ProjectCard";
-import CategoryDropdown from "../(components)/ui/CategoryDropdown"; 
+import ProjectCard from "../../(components)/dashboard/ProjectCard";
+import CategoryDropdown from "../../(components)/ui/CategoryDropdown"; 
 import ProjectDetailModal from "../(components)/dashboard/ProjectDetailModal";
 
 export default function Projects() {

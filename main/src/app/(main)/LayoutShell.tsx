@@ -19,7 +19,7 @@ import {
   FileCode
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import ProfileDropdown from "./(components)/layout/ProfileDropdown";
+import ProfileDropdown from "../(components)/layout/ProfileDropdown";
 
 const navSections = [
   {

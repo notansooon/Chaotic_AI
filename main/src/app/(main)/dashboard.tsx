@@ -11,9 +11,9 @@ import {
   ArrowDown,
   Sigma
 } from "lucide-react";
-import UsageChart from "./(components)/dashboard/UsageChart";
-import ResourceTable from "./(components)/dashboard/ResourceTable";
-import { User }  from "./(components)/entities/User";
+import UsageChart from "../(components)/dashboard/UsageChart";
+import ResourceTable from "../(components)/dashboard/ResourceTable";
+import { User }  from "../(components)/entities/User";
 
 type Resource = {
   id: string;

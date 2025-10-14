@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import PeerPoint from "../(components)/entities/PeerPoint.json";
+import PeerPoint from "../../(components)/entities/PeerPoint.json";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, MessageSquare, DollarSign, Star } from "lucide-react";
 import { motion } from "framer-motion";
-import PeerPointDetailModal from "../(components)/peerpoint/PeerPointDetailModal";
+import PeerPointDetailModal from "../../(components)/peerpoint/PeerPointDetailModal";
 
 export default function PeerPoints() {
   const [peerPoints, setPeerPoints] = useState([]);

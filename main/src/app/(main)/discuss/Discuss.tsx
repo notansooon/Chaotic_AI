@@ -2,19 +2,19 @@
 
 
 import React, { useState, useEffect, useCallback } from "react";
-import Discussion  from "../(components)/entities/Discuss.json";
-import { User }  from "../(components)/entities/User";
+import Discussion  from "../../(components)/entities/Discuss.json";
+import { User }  from "../../(components)/entities/User";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Plus, TrendingUp, Clock, MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
-import { InvokeLLM } from "../(components)/integration/core";
+import { InvokeLLM } from "../../(components)/integration/core";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
-import DiscussionCard from "../(components)/discuss/DIscussionCard";
-import CreateDiscussionModal from "../(components)/discuss/CreateDiscussionModal";
-import TrendingDiscussionCard from "../(components)/discuss/TrendingDiscussionCard";
-import DiscussionModal from "../(components)/discuss/DiscussionModal";
+import DiscussionCard from "../../(components)/discuss/DIscussionCard";
+import CreateDiscussionModal from "../../(components)/discuss/CreateDiscussionModal";
+import TrendingDiscussionCard from "../../(components)/discuss/TrendingDiscussionCard";
+import DiscussionModal from "../../(components)/discuss/DiscussionModal";
 
 export default function Discuss() {
   const [discussions, setDiscussions] = useState([]);
