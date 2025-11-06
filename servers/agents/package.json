@@ -1,0 +1,28 @@
+{
+    "name": "@kyntrix/agents",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "tsx src/index.ts",
+        "build": "tsc -p tsconfig.json",
+        "start": "node dist/index.js",
+        "prisma:generate": "prisma generate",
+        "prisma:migrate": "prisma migrate dev --name init"
+    },
+    "prisma": {
+        "schema": "../../database/prisma/schema.prisma"
+    },
+    "dependencies": {
+        "@fastify/websocket": "^8.3.0",
+        "@prisma/client": "^5.19.0",
+        "fastify": "^4.27.0",
+        "prisma": "^5.19.0",
+        "split2": "^4.2.0",
+        "zod": "^3.23.8"
+    },
+    "devDependencies": {
+        "@types/split2": "^4.2.3",
+        "tsx": "^4.19.0",
+        "typescript": "^5.6.3"
+    }
+}

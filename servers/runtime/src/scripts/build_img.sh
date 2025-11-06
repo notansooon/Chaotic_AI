@@ -1,95 +1,97 @@
 
 set -euo pipefail
 
-IMG_DIR=${1:-$Home/.kyntrix/images}
-SIZE=${2:-20G}
-NAME=ubuntu-noble
-UBUNTU_RELEASE=noble
-ARCH=${uname -m}
+# Usage: ./build_img.sh [IMG_DIR=~/.kyntrix/images] [SIZE=20G]
+IMG_DIR="${1:-$HOME/.kyntrix/images}"
+SIZE="${2:-20G}"
 
+NAME="ubuntu-noble"           
+UBUNTU_RELEASE="noble"
 
-if [[ ${ARCH} == "x86_64" ]]; then
-    ARCH=amd64
-elif [[${ARCH} == "arm64" || ${ARCH} == "aarch64"]] ; then
-    ARCH=arm64
+# Detect host arch → map to Ubuntu cloud image arch labels
+ARCH="$(uname -m)"
+
+if [[ "$ARCH" == "x86_64" ]]; then
+  ARCH_DL="amd64"
+elif [[ "$ARCH" == "arm64" || "$ARCH" == "aarch64" ]]; then
+  ARCH_DL="arm64"
 else
-    echo "Unsupported architecture: ${ARCH}"
-    exit 1
-
+  echo "Unsupported architecture: $ARCH"
+  exit 1
 fi
 
-// Users PATH to store images
-IMG_PATH="${IMF_DIR}/${NAME}"
-mkdir -p ${IMG_PATH}
-cd ${IMG_PATH}
+# Where we store the artifacts
+IMG_PATH="${IMG_DIR}/${NAME}"
+mkdir -p "${IMG_PATH}"
+cd "${IMG_PATH}"
 
+# Remote cloud image name (Ubuntu official cloud image)
+CLOUD_IMG="${UBUNTU_RELEASE}-server-cloudimg-${ARCH_DL}.img"
 
-// Get the latest Ubuntu cloud image
-CLOUD_IMG="${UBUNTU_RELEASE}-server-cloudimg-${ARCH}.img"
+# Download if missing
+if [[ ! -f "${CLOUD_IMG}" ]]; then
 
-if [[ -f !${CLOUD_IMG} ]]; then
-    echo "[Kyntrix] Downloading Ubuntu Noble ($ARCH)..."
-    curl -fsSL "https://cloud-images.ubuntu.com/${UBUNTU_RELEASE}/current/${CLOUD_IMG}" -o ${CLOUD_IMG}
-else 
-    echo "[Kyntrix] Ubuntu Noble image already exists. Skipping download."
+  echo "[Kyntrix] Downloading Ubuntu ${UBUNTU_RELEASE} (${ARCH_DL})..."
+  curl -fSL "https://cloud-images.ubuntu.com/${UBUNTU_RELEASE}/current/${CLOUD_IMG}" -o "${CLOUD_IMG}"
+else
+  echo "[Kyntrix] Ubuntu image already exists. Skipping download."
 fi
 
-// Compress the image to QCOW2 and resize
-
-if [ -f !${NAME}.img ]; then
-    echo "[Kyntrix] Converting to QCOW2 and resizing to $SIZE..."
-    qemu-img convert -O qcow2 ${CLOUD_IMG} ${NAME}.img
-    qemu-img resize ${NAME}.img $SIZE
-    
-else 
-    echo "[Kyntrix] Working image already exists. Skipping creation."
+# Convert to QCOW2 working image and resize (idempotent)
+WORK_QCOW="${NAME}.qcow2"
+if [[ ! -f "${WORK_QCOW}" ]]; then
+  echo "[Kyntrix] Converting to QCOW2 and resizing to ${SIZE}..."
+  qemu-img convert -O qcow2 "${CLOUD_IMG}" "${WORK_QCOW}"
+  qemu-img resize "${WORK_QCOW}" "${SIZE}"
+else
+  echo "[Kyntrix] Working QCOW2 already exists. Skipping creation."
 fi
 
-
-// Create seed directory for cloud-init
+# Cloud-init seed (for first-boot provisioning)
 mkdir seed
 
+# Ensure SSH key exists
 PUBKEY_PATH="${PUBKEY_PATH:-$HOME/.ssh/id_ed25519.pub}"
-if [ ! -f "$PUBKEY_PATH" ]; then
+if [[ ! -f "$PUBKEY_PATH" ]]; then
   echo "[Kyntrix] No SSH key found, generating a new one..."
   mkdir -p "$HOME/.ssh"
   ssh-keygen -t ed25519 -N "" -f "$HOME/.ssh/id_ed25519"
 fi
-PUBKEY=$(cat "$PUBKEY_PATH")
+PUBKEY="$(cat "$PUBKEY_PATH")"
 
-// Create cloud-init user-data and meta-data
-
+# user-data (cloud-init) — note: runcmd is the correct key, user name fixed
 cat > seed/user-data <<EOF
 #cloud-config
-users: 
-    - name: kybtrix
+preserve_hostname: false
+hostname: kyntrix-vm
+ssh_pwauth: false
+users:
+  - name: kyntrix
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
     lock_passwd: false
     ssh_authorized_keys:
       - ${PUBKEY}
+package_update: true
 packages:
-    - ca-certificates
-    - curl
-    - iptables
-    - net-tools
-run_cmd:
-    - [ bash, -lc, "systemctl enable ssh || true" ]
-    - [ bash, -lc, "systemctl start ssh || true" ]
+  - ca-certificates
+  - curl
+  - iptables
+  - net-tools
+runcmd:
+  - [ bash, -lc, "systemctl enable ssh || true" ]
+  - [ bash, -lc, "systemctl start ssh || true" ]
 EOF
 
-cat > seed/meta-data << EOF
+cat > seed/meta-data <<EOF
 instance-id: kyntrix-instance
 local-hostname: kyntrix-vm
 EOF
 
-
-// Create the cloud-init ISO
+# Build seed.iso (prefer cloud-localds; fallback to genisoimage/mkisofs)
 if command -v cloud-localds >/dev/null 2>&1; then
-
   echo "[Kyntrix] Creating seed.iso with cloud-localds..."
   cloud-localds -v seed.iso seed/user-data seed/meta-data
-
 else
   echo "[Kyntrix] Creating seed.iso with genisoimage/mkisofs..."
   if command -v genisoimage >/dev/null 2>&1; then
@@ -99,19 +101,19 @@ else
   fi
 fi
 
-
 echo
-echo "[Kyntrix] ✅ Ubuntu Noble base image ready!"
+echo "[Kyntrix] ✅ Ubuntu ${UBUNTU_RELEASE^} base image ready!"
 echo "-------------------------------------------"
-echo "Base image: $IMG_PATH/${NAME}.qcow2"
-echo "Seed ISO:   $IMG_PATH/seed.iso"
-echo "Virtual size: $SIZE"
-echo "Architecture: $ARCH"
-echo "SSH user: kyntrix"
-echo "SSH key: $PUBKEY_PATH"
+echo "Base QCOW2 : ${IMG_PATH}/${WORK_QCOW}"
+echo "Seed ISO   : ${IMG_PATH}/seed.iso"
+echo "Virtual sz : ${SIZE}"
+echo "Host arch  : ${ARCH} (Ubuntu arch: ${ARCH_DL})"
+echo "SSH user   : kyntrix"
+echo "SSH key    : ${PUBKEY_PATH}"
 echo "-------------------------------------------"
-echo
-echo "You can now create containers (micro-VMs) using this image."
-echo "Example:"
-echo "  kyntrix run ubuntu-noble --name web"
+echo "Example QEMU boot (host networking fwd 2222→22):"
+echo "  qemu-system-$( [[ \"$ARCH\" == \"arm64\" || \"$ARCH\" == \"aarch64\" ]] && echo aarch64 || echo x86_64 ) \\"
+echo "    -m 2048 -cpu host -drive file=${WORK_QCOW},if=virtio,format=qcow2 \\"
+echo "    -drive file=seed.iso,if=virtio,format=raw \\"
+echo "    -nic user,model=virtio,hostfwd=tcp::2222-:22 -nographic -serial mon:stdio"
 echo

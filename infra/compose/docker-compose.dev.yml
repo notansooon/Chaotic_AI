@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: kyntrix
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: kyntrix
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+
+  agents:
+    build: ../../servers/agents
+    environment:
+      DATABASE_URL: postgresql://kyntrix:dev@postgres:5432/kyntrix?schema=public
+      HTTP_PORT: "7090"
+      SNAPSHOT_INTERVAL_MS: "3000"
+    depends_on: [postgres]
+    ports: ["7090:7090"]
+
+  web:
+    build: ../../web
+    environment:
+      NEXT_PUBLIC_WS_URL: ws://localhost:7090/graph/stream
+      API_BASE_URL: http://localhost:7090
+    depends_on: [agents]
+    ports: ["3000:3000"]
+
+volumes:
+  pgdata: {}

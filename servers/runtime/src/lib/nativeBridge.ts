@@ -9,6 +9,8 @@ export function callCore(method: string, args: Record<string, any>) {
 
 
 
-        process.stdout.on("data",)
+        process.stdout.on("data", data => {
+            
+        })
     })
 }

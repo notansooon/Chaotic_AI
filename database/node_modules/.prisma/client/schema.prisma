@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// One traced execution (local MVP = single user)
+model Run {
+  id        String    @id @default(uuid())
+  label     String?
+  status    String    @default("running") // running | completed | error
+  createdAt DateTime  @default(now())
+  endedAt   DateTime?
+
+  // relationships
+  events    Event[]
+  nodes     Node[]
+  edges     Edge[]
+  snapshots Snapshot[]
+  cursor    Cursor?
+}
+
+/// Raw NDJSON events from the embedded agent (ordered by seq).
+model Event {
+  id         String  @id @default(uuid())
+  runId      String
+  seq        Int // global ordering (monotonic per run)
+  ts         BigInt // epoch micros or nanos (choose one)
+  kind       String // Call | Return | Line | IO | Metric | Error ...
+  span       String? // correlates Call<->Return (activation)
+  parentSpan String?
+  nodeKey    String? // optional stable key (file+func) for analytics
+  data       Json? // args, metrics, IO payload meta, etc.
+  code       Json? // { file, line, func, sourceMapId, digest }
+
+  run Run @relation(fields: [runId], references: [id])
+
+  @@index([runId, seq])
+  @@index([runId, span])
+}
+
+/// A single call instance (what the UI numbers [1],[2],...).
+model Node {
+  id         String  @id @default(uuid())
+  runId      String
+  num        Int // global chronological node number (1..N)
+  span       String? // activation span id (if emitted)
+  parentId   String? // optional parent call (immediate caller)
+  type       String // Function | External | IO | Service | DB | Group
+  label      String? // UI label (short); graph shows number, panel shows this
+  key        String? // optional stable entity key (file:func)
+  startedSeq Int // first event seq for this call
+  endedSeq   Int? // last event seq for this call
+  startedAt  BigInt // time the call began
+  endedAt    BigInt? // time the call ended
+  props      Json? // counters (errors, bytes, duration, etc.)
+
+  run      Run    @relation(fields: [runId], references: [id])
+  parent   Node?  @relation("CallParent", fields: [parentId], references: [id])
+  children Node[] @relation("CallParent")
+
+  outgoing Edge[] @relation("FromNode")
+  incoming Edge[] @relation("ToNode")
+
+  @@unique([runId, num]) // node number is unique within the run
+  @@index([runId, startedSeq])
+}
+
+/// Caller -> Callee edges. Ordinal is local to the source node.
+model Edge {
+  id             String  @id @default(uuid())
+  runId          String
+  fromNodeId     String
+  toNodeId       String
+  ordinal        Int // (1..k) numbering restarts per fromNode
+  createdSeq     Int // seq of event that created this hop
+  createdLine    Int? // source line (if known)
+  createdFile    String? // source file (if known)
+  kind           String? // calls | reads | writes | emits ...
+  groupedUnderId String? // if this edge is inside a group, reference parent group edge
+  props          Json? // latency, size, status, counts...
+
+  run      Run  @relation(fields: [runId], references: [id])
+  fromNode Node @relation("FromNode", fields: [fromNodeId], references: [id])
+  toNode   Node @relation("ToNode", fields: [toNodeId], references: [id])
+
+  @@index([runId, fromNodeId, ordinal])
+  @@index([runId, createdSeq])
+}
+
+/// Optional: code storage for the Code tab (local dev = DB, cloud = object store).
+model SourceFile {
+  id          String @id @default(uuid())
+  sourceMapId String
+  file        String
+  digest      String // sha256 of contents
+  lang        String
+  content     String // text content
+
+  @@index([sourceMapId, file, digest])
+}
+
+/// Ingestion watermark per run (resume processing idempotently).
+model Cursor {
+  runId      String   @id
+  appliedSeq Int
+  updatedAt  DateTime @updatedAt
+
+  run Run @relation(fields: [runId], references: [id])
+}
+
+/// Optional: periodic full graph save for fast reload/replay.
+model Snapshot {
+  id    String   @id @default(uuid())
+  runId String
+  ts    DateTime @default(now())
+  graph Json // {nodes:[{num,...}], edges:[...], cursor:{...}}
+
+  run Run @relation(fields: [runId], references: [id])
+
+  @@index([runId, ts])
+}
