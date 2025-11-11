@@ -112,5 +112,5 @@
   },
   "include": [
     "src"
-, "routers/ingest.ts"  ],
+, "routers/ingest.ts", "server.ts"  ],
 }
