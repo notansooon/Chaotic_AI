@@ -7,6 +7,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+
+  instances Instance[]
+}
+model Instance {
+  id        String   @id @default(uuid())
+  label    String
+  createdAt DateTime @default(now())
+  userId    String
+  user User @relation(fields: [userId], references: [id])
+}
 /// One traced execution (local MVP = single user)
 model Run {
   id        String    @id @default(uuid())
@@ -21,6 +36,12 @@ model Run {
   edges     Edge[]
   snapshots Snapshot[]
   cursor    Cursor?
+
+
+  // s3
+  s3EventsKey String? 
+  s3SnapshotPrefix String?
+  s3ArtifactsPrefix String?
 }
 
 /// Raw NDJSON events from the embedded agent (ordered by seq).
