@@ -17,6 +17,9 @@ app.use((req, _res, next) => {
 })
 
 
+const server = http.createServer(app);
+
+
 
 app.use(ingestRouter);
 app.use(runRouter);
