@@ -3,7 +3,7 @@ import { z } from 'zod';
 import split2 from 'split2';
 
 import { redis, streamKey } from '../storage/redis.js';
-import { processLine } from '../src/pipeline/index.js';
+
 
 export const ingestRouter = Router();
 

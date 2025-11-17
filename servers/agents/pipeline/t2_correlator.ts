@@ -39,8 +39,11 @@ export function applyEvent(state: GraphState, event: TalEvent) {
     state.counter.set(event.kind, (state.counter.get(event.kind) ?? 0) + 1);
 }
 
-export function buildDelta(runId: string, state: GraphState) {
 
+
+
+// T3
+export function buildDelta(runId: string, state: GraphState) {
     return {
         runId, 
         atSeq: state.lastSeq,
