@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import { redis, ensureGroup } from '../storage/redis.js';
-import { TalEventSchema } from './t1_parser.js';
+import { TalEventSchema, type TalEvent } from './t1_parser.js';
 import { initState, applyEvent, buildDelta, GraphState } from './t2_correlator.js';
 
 dotenv.config();
@@ -12,7 +12,9 @@ const BLOCK_MS = Number(process.env.BLOCK_MS) || 20;
 const FPS = Number(process.env.FPS) || 5;
 const EMIT_MS = Math.round(1000 / FPS);
 
-const now = Date.now();
+function now(): number {
+    return Date.now();
+} 
 const run = new Map<string, GraphState>();
 
 async function scanStreams(): Promise<string[]> {
@@ -48,7 +50,7 @@ async function scanStreams(): Promise<string[]> {
 
 async function main() {
     const streams = await scanStreams();
-    for (const stream of steams) {
+    for (const stream of streams) {
         await ensureGroup(stream);
     }
 
@@ -58,7 +60,7 @@ async function main() {
     while (true) {
         
         const args = [
-            'GROUP', GROUP, `w-${prccess.pid}`,
+            'GROUP', GROUP, `w-${process.pid}`,
             'BLOCK', String(BATCH),
             'COUNT', BATCH.toString(), 
             'STREAMS', ...streams, ...streams.map(() => '>')
@@ -104,7 +106,7 @@ async function main() {
             }
         }
 
-        const nowTs = Date.now();
+        const nowTs = now();
 
         if (nowTs - lastEmit >= EMIT_MS) {
 
