@@ -1,6 +1,15 @@
 import type { TalEvent } from './t1_parser.js';
 
 
+export type Node = {
+    id: string;
+    label: string;
+}
+
+export type Edge = {
+    from: string;
+    to: string;
+}
 export type GraphState = {
     lastSeq: number;
     node: Map<string, {id: string, label: string}>;
@@ -40,6 +49,20 @@ export function applyEvent(state: GraphState, event: TalEvent) {
 }
 
 
+export type GraphDelta = {
+    runId: string;
+    atSeq: number;
+    nodes: Node[];
+    edges: Edge[];
+    counter: Record<string, number>;
+
+}
+
+
+
+
+
+
 
 
 // T3
@@ -47,6 +70,8 @@ export function buildDelta(runId: string, state: GraphState) {
     return {
         runId, 
         atSeq: state.lastSeq,
+        nodes: Array.from(state.node.values()),
+        edges: state.edges.slice(),
         counter: Object.fromEntries(state.counter.entries()),
     }
 }
