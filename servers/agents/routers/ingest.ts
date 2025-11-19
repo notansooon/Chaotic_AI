@@ -21,20 +21,54 @@ const TalEvent = z.object({
 
 })
 
+/*
+ingestRouter.post('/tal', (req, res) => {
+  console.log('[ingest] HIT /tal');
 
 
-ingestRouter.post("/ingest/tal", (req, res) => {
+  req.setEncoding('utf8');
+  const stream = req.pipe(split2());
+  let amount = 0;
+
+  stream.on('data', (line: string) => {
+    const trimmed = line.trim();
+    if (!trimmed) return;
+    amount += 1;
+    console.log('[ingest] line:', trimmed);
+  });
+
+  stream.on('end', () => {
+    console.log('[ingest] END, amount =', amount);
+    res.status(200).json({ status: 'ok', ingested: amount });
+  });
+
+  stream.on('error', (err) => {
+    console.error('[ingest] stream error:', err);
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'ingest failed' });
+    }
+  });
+});
+*/
+
+ingestRouter.post("/tal", (req, res) => {
     const pipeline = redis.pipeline();
     req.setEncoding('utf8');
     let amount = 0;
 
     const stream = req.pipe(split2());
-     
-    const socket = (req as any).socket;
 
     stream.on('data', async (line: string) => {
         
         try {
+
+            const trimmed = line.trim()
+            if (!trimmed) {
+                return
+            }
+
+            console.log ("Stream data: ", line)
+
             const parsed = TalEvent.parse(JSON.parse(line));
             const key = `run:${parsed.runId}`;
             pipeline.xadd(key, '*', 'json', JSON.stringify(parsed));
@@ -60,4 +94,3 @@ ingestRouter.post("/ingest/tal", (req, res) => {
         }
     })
 })
-   

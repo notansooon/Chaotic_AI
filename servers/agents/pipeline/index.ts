@@ -54,7 +54,6 @@ async function main() {
         await ensureGroup(stream);
     }
 
-
     let lastEmit = 0;
 
     while (true) {
