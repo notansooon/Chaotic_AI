@@ -1,5 +1,6 @@
 #pragma once
-#ifdef __cplusplus
+
+#ifdef __cplusplus 
 extern "C" {
 #endif
 
@@ -8,10 +9,8 @@ typedef struct {
     const char* run_id;
     int         batch_size;
     int         flush_interval_ms;
-}   kyntrixAgentConfig
+}   kyntrixAgentConfig;
 
-typedef struct {
-    const char* run_id;
-    long long 
-}
+#ifdef __cplusplus
 } 
+#endif
