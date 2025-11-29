@@ -1,5 +1,7 @@
 #pragma once
-#include <cstring>
+#include <stdio.h>
+#include <stdarg.h>
 
-void log_info(const char* msg);
-void log_error(const char* msg);
+void log_debug(const char* fmt, ...);
+void log_info(const char* fmt, ...);
+void log_error(const char* fmt, ...);

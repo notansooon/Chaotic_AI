@@ -128,7 +128,7 @@ void kyntrix_agent_init(const KyntrixAgentConfig* cfg) {
     g_state.initialized = true;
 
     log_info("[agent_core] initialized: url=%s batch=%d",
-             g_state.ingest_url.c_str(), g_state.batch_size);
+        g_state.ingest_url.c_str(), g_state.batch_size);
 }
 
 void kyntrix_agent_record(const KyntrixEvent* ev) {
@@ -173,7 +173,7 @@ void kyntrix_agent_record(const KyntrixEvent* ev) {
     if (ev->node_key) {
         e.node_key = ev->node_key;
     }
-    
+
     if (ev->data_json) {
         e.data_json   = ev->data_json;
     }
@@ -198,5 +198,5 @@ void kyntrix_agent_shutdown(void) {
     log_info("[agent_core] shutdown complete");
 }
 
-} // extern "C"
+ // extern "C"
 
