@@ -1,0 +1,165 @@
+"filename", "language", "XML", "JSON", "TypeScript", "JSON with Comments", "JavaScript", "Markdown", "C++", "JavaScript JSX", "CMake", "TypeScript JSX", "PostCSS", "YAML", "Shell Script", "Prisma", "Properties", "MS SQL", "comment", "blank", "total"
+"/Users/ansonjiang/Documents/Chaotic_AI/.idea/OptimizeMe.iml", "XML", 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12
+"/Users/ansonjiang/Documents/Chaotic_AI/.idea/inspectionProfiles/Project_Default.xml", "XML", 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6
+"/Users/ansonjiang/Documents/Chaotic_AI/.idea/modules.xml", "XML", 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8
+"/Users/ansonjiang/Documents/Chaotic_AI/.idea/prettier.xml", "XML", 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6
+"/Users/ansonjiang/Documents/Chaotic_AI/.idea/vcs.xml", "XML", 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6
+"/Users/ansonjiang/Documents/Chaotic_AI/adapters/node-embedded/package.json", "JSON", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/ansonjiang/Documents/Chaotic_AI/adapters/node-embedded/src/autoHook.ts", "TypeScript", 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"/Users/ansonjiang/Documents/Chaotic_AI/adapters/node-embedded/src/hooks/express.ts", "TypeScript", 0, 0, 70, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 20, 97
+"/Users/ansonjiang/Documents/Chaotic_AI/adapters/node-embedded/src/hooks/fs.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/ansonjiang/Documents/Chaotic_AI/adapters/node-embedded/src/hooks/http.ts", "TypeScript", 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 34
+"/Users/ansonjiang/Documents/Chaotic_AI/adapters/node-embedded/src/native.ts", "TypeScript", 0, 0, 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 50
+"/Users/ansonjiang/Documents/Chaotic_AI/database/.env", "Properties", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1
+"/Users/ansonjiang/Documents/Chaotic_AI/database/package-lock.json", "JSON", 0, 119, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 120
+"/Users/ansonjiang/Documents/Chaotic_AI/database/package.json", "JSON", 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 19
+"/Users/ansonjiang/Documents/Chaotic_AI/database/prisma/migrations/20251105170650_init/migration.sql", "MS SQL", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 89, 23, 30, 142
+"/Users/ansonjiang/Documents/Chaotic_AI/database/prisma/schema.prisma", "Prisma", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 114, 0, 0, 9, 24, 147
+"/Users/ansonjiang/Documents/Chaotic_AI/infra/compose/docker-compose.dev.yml", "YAML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 0, 0, 0, 0, 4, 31
+"/Users/ansonjiang/Documents/Chaotic_AI/main/.eslintrc.json", "JSON with Comments", 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"/Users/ansonjiang/Documents/Chaotic_AI/main/CHANGELOG.md", "Markdown", 0, 0, 0, 0, 0, 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 80
+"/Users/ansonjiang/Documents/Chaotic_AI/main/README.md", "Markdown", 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 37
+"/Users/ansonjiang/Documents/Chaotic_AI/main/components.json", "JSON", 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 23
+"/Users/ansonjiang/Documents/Chaotic_AI/main/jsconfig.json", "JSON with Comments", 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 8
+"/Users/ansonjiang/Documents/Chaotic_AI/main/mdx-components.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 9
+"/Users/ansonjiang/Documents/Chaotic_AI/main/next.config.mjs", "JavaScript", 0, 0, 0, 0, 75, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 8, 84
+"/Users/ansonjiang/Documents/Chaotic_AI/main/package-lock.json", "JSON", 0, 10249, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 10250
+"/Users/ansonjiang/Documents/Chaotic_AI/main/package.json", "JSON", 0, 70, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 71
+"/Users/ansonjiang/Documents/Chaotic_AI/main/postcss.config.js", "JavaScript", 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6
+"/Users/ansonjiang/Documents/Chaotic_AI/main/prettier.config.js", "JavaScript", 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 8
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/chat/AIChatBubble.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 193, 0, 0, 0, 0, 0, 0, 1, 18, 212
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/dashboard/ProjectCard.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 93, 0, 0, 0, 0, 0, 0, 0, 9, 102
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/dashboard/ResourceTable.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 138, 0, 0, 0, 0, 0, 0, 0, 4, 142
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/dashboard/UsageChart.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 0, 0, 0, 0, 0, 0, 0, 1, 59
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/discuss/CreateDiscussionModal.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 88, 0, 0, 0, 0, 0, 0, 1, 5, 94
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/discuss/DIscussionCard.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 60, 0, 0, 0, 0, 0, 0, 0, 5, 65
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/discuss/DiscussionModal.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 116, 0, 0, 0, 0, 0, 0, 8, 11, 135
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/discuss/TrendingDiscussionCard.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 53, 0, 0, 0, 0, 0, 0, 0, 3, 56
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/entities/Comment.json", "JSON", 0, 34, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 35
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/entities/Discuss.json", "JSON", 0, 47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 48
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/entities/Event.json", "JSON", 0, 122, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 123
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/entities/PeerPoint.json", "JSON", 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 14
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/entities/Project.json", "JSON", 0, 130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 131
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/entities/Review.json", "JSON", 0, 77, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/entities/User.ts", "TypeScript", 0, 0, 55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 71
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/events/EventCalenderView.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 150, 0, 0, 0, 0, 0, 0, 0, 10, 160
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/events/EventDetailModal.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 131, 0, 0, 0, 0, 0, 0, 0, 10, 141
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/integration/core.ts", "TypeScript", 0, 0, 75, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 10, 93
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/layout/ProfileDropdown.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 0, 0, 0, 0, 0, 0, 1, 18, 147
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/peerpoint/PeerPointDetailModal.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 70, 0, 0, 0, 0, 0, 0, 0, 7, 77
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/profile/CalenderTab.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 265, 0, 0, 0, 0, 0, 0, 15, 32, 312
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/profile/EditProfileModal.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 195, 0, 0, 0, 0, 0, 0, 0, 18, 213
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(components)/ui/CategoryDropdown.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 124, 0, 0, 0, 0, 0, 0, 0, 5, 129
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(executable)/runs/[runId]/layout.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(executable)/runs/[runId]/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/LayoutShell.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 150, 0, 0, 0, 0, 0, 0, 7, 17, 174
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/containers/Container.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 115, 0, 0, 0, 0, 0, 0, 0, 13, 128
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/containers/[containerId]/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/containers/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 2, 6
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/dashboard.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 247, 0, 0, 0, 0, 0, 0, 0, 22, 269
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/discuss/Discuss.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 129, 0, 0, 0, 0, 0, 0, 10, 22, 161
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/discuss/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 2, 6
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/forgot-password/ForgotPassword.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 6, 46
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/forgot-password/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1, 5
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/layout.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 0, 0, 1, 4, 27
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/page.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 6
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/peerpoint/PeerPoints.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 227, 0, 0, 0, 0, 0, 0, 0, 21, 248
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/peerpoint/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/profile/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/profile/profile.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 222, 0, 0, 0, 0, 0, 0, 4, 26, 252
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/profile/settings/settings.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 333, 2, 335
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/projects/ProjectShell.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 348, 0, 0, 0, 0, 0, 0, 8, 32, 388
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/projects/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 2, 6
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/signIn/SignIn.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 0, 0, 0, 0, 0, 0, 1, 14, 88
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/signIn/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 4, 8
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/signUp/SignUp.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 68, 0, 0, 0, 0, 0, 0, 1, 17, 86
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/signUp/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 4, 8
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/app/(main)/unauthorized/page.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 29
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/BlackButton.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 29
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/Logo.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 62
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/alert.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 88, 0, 0, 0, 0, 0, 0, 0, 8, 96
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/auth-layout.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 2, 12
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/checkbox.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 132, 0, 0, 0, 0, 0, 0, 19, 7, 158
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/fieldset.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 84, 0, 0, 0, 0, 0, 0, 0, 8, 92
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/heading.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 6, 28
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/input.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 76, 0, 0, 0, 0, 0, 0, 15, 4, 95
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/link.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 1, 14
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/select.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 53, 0, 0, 0, 0, 0, 0, 14, 2, 69
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/text.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 0, 0, 0, 5, 41
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/badge.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 0, 0, 0, 0, 0, 0, 0, 6, 47
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/button.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 54, 0, 0, 0, 0, 0, 0, 0, 6, 60
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/calendar.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 203, 0, 0, 0, 0, 0, 0, 0, 11, 214
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/card.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 83, 0, 0, 0, 0, 0, 0, 0, 10, 93
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/checkbox.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 5, 33
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/collapsible.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 6, 34
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/dialog.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 130, 0, 0, 0, 0, 0, 0, 0, 14, 144
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/dropdown-menu.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 239, 0, 0, 0, 0, 0, 0, 0, 19, 258
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/input.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 4, 22
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/label.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 5, 25
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/navigation-menu.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 157, 0, 0, 0, 0, 0, 0, 0, 12, 169
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/popover.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 0, 0, 0, 0, 0, 0, 0, 8, 49
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/progress.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 0, 5, 32
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/select.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 172, 0, 0, 0, 0, 0, 0, 0, 14, 186
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/separator.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 5, 29
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/sheet.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 126, 0, 0, 0, 0, 0, 0, 0, 14, 140
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/sidebar.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 660, 0, 0, 0, 0, 0, 0, 12, 55, 727
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/skeleton.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 3, 14
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/switch.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 0, 5, 32
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/table.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 105, 0, 0, 0, 0, 0, 0, 0, 12, 117
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/tabs.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 59, 0, 0, 0, 0, 0, 0, 0, 8, 67
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/textarea.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 4, 19
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/components/ui/tooltip.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 54, 0, 0, 0, 0, 0, 0, 0, 8, 62
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/data.ts", "TypeScript", 0, 0, 926, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 934
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/hooks/use-mobile.ts", "TypeScript", 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 20
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/lib/auth-client.ts", "TypeScript", 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 9
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/lib/auth.ts", "TypeScript", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 8
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/lib/formatDate.js", "JavaScript", 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 12
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/lib/mdx.js", "JavaScript", 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 29
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/lib/utils.ts", "TypeScript", 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 7
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/state/StoreProvider.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 5, 27
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/state/api.ts", "TypeScript", 0, 0, 83, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 17, 109
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/state/dashboardSlice/index.ts", "TypeScript", 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 10, 37
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/state/hooks.ts", "TypeScript", 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4, 14
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/state/marketSlice/index.ts", "TypeScript", 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 14, 31
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/state/store.ts", "TypeScript", 0, 0, 53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 9, 65
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/styles/base.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 1, 9
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/styles/tailwind.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 149, 0, 0, 0, 0, 0, 0, 12, 161
+"/Users/ansonjiang/Documents/Chaotic_AI/main/src/styles/typography.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 146, 0, 0, 0, 0, 0, 8, 31, 185
+"/Users/ansonjiang/Documents/Chaotic_AI/main/tsconfig.json", "JSON with Comments", 0, 0, 0, 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 42
+"/Users/ansonjiang/Documents/Chaotic_AI/native/agent_core/CMakeLists.txt", "CMake", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/ansonjiang/Documents/Chaotic_AI/native/agent_core/include/kyntrix/agent_core.h", "C++", 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 21
+"/Users/ansonjiang/Documents/Chaotic_AI/native/agent_core/include/kyntrix/config.h", "C++", 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 16
+"/Users/ansonjiang/Documents/Chaotic_AI/native/agent_core/include/kyntrix/event.h", "C++", 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 20
+"/Users/ansonjiang/Documents/Chaotic_AI/native/agent_core/include/kyntrix/version.h", "C++", 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 11
+"/Users/ansonjiang/Documents/Chaotic_AI/native/agent_core/src/agent_core.cpp", "C++", 0, 0, 0, 0, 0, 0, 148, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 47, 203
+"/Users/ansonjiang/Documents/Chaotic_AI/native/agent_core/src/logging.cpp", "C++", 0, 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 40
+"/Users/ansonjiang/Documents/Chaotic_AI/native/agent_core/src/logging.h", "C++", 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7
+"/Users/ansonjiang/Documents/Chaotic_AI/package-lock.json", "JSON", 0, 118, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 119
+"/Users/ansonjiang/Documents/Chaotic_AI/package.json", "JSON", 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 9
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/agents/db/client.ts", "TypeScript", 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/agents/package-lock.json", "JSON", 0, 2239, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2240
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/agents/package.json", "JSON", 0, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 34
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/agents/pipeline/index.ts", "TypeScript", 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 37, 137
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/agents/pipeline/t1_parser.ts", "TypeScript", 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 19
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/agents/pipeline/t2_correlator.ts", "TypeScript", 0, 0, 54, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 25, 80
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/agents/routers/ingest.ts", "TypeScript", 0, 0, 47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 21, 97
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/agents/routers/run.ts", "TypeScript", 0, 0, 21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 27
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/agents/server.ts", "TypeScript", 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 19
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/agents/storage/redis.ts", "TypeScript", 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 33
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/agents/testing/ingest-test.ts", "TypeScript", 0, 0, 68, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 23, 91
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/agents/testing/ws-test.ts", "TypeScript", 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 17
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/agents/tsconfig.json", "JSON with Comments", 0, 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 9, 117
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/agents/ws/hub.ts", "TypeScript", 0, 0, 51, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 26, 77
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/package-lock.json", "JSON", 0, 3415, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3416
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/package.json", "JSON", 0, 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 44
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/runtime/native/container/ct_mount.cpp", "C++", 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/runtime/native/container/ct_mount.h", "C++", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/runtime/src/index.ts", "TypeScript", 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 19
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/runtime/src/lib/nativeBridge.ts", "TypeScript", 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 16
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/runtime/src/os/detect.ts", "TypeScript", 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 22
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/runtime/src/routes/containers.ts", "TypeScript", 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 11
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/runtime/src/routes/hypervisor.ts", "TypeScript", 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 11
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/runtime/src/scripts/build_img.sh", "Shell Script", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 92, 0, 0, 0, 11, 17, 120
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/runtime/src/scripts/limac-kyntrix.yaml", "YAML", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/ansonjiang/Documents/Chaotic_AI/servers/runtime/src/scripts/mac-ensure-limac.sh", "Shell Script", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 4, 6
+"Total", "-", 38, 16755, 1861, 68, 121, 63, 231, 119, 0, 6393, 303, 27, 94, 114, 1, 89, 668, 1316, 28261
