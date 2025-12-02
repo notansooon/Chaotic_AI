@@ -1,0 +1,34 @@
+Date : 2025-12-01 16:22:28
+Directory : /Users/ansonjiang/Documents/Chaotic_AI
+Total : 6 files,  1110 codes, 20 comments, 41 blanks, all 1171 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| JSON     |          2 |        960 |          0 |          1 |        961 |
+| Python   |          4 |        150 |         20 |         40 |        210 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                            | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                               |          6 |      1,110 |         20 |         41 |      1,171 |
+| adapters                                                                        |          6 |      1,110 |         20 |         41 |      1,171 |
+| adapters/node-embedded                                                          |          2 |        960 |          0 |          1 |        961 |
+| adapters/python-embedded                                                        |          4 |        150 |         20 |         40 |        210 |
++---------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                        | language | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| /Users/ansonjiang/Documents/Chaotic_AI/adapters/node-embedded/package-lock.json | JSON     |        941 |          0 |          1 |        942 |
+| /Users/ansonjiang/Documents/Chaotic_AI/adapters/node-embedded/package.json      | JSON     |         19 |          0 |          0 |         19 |
+| /Users/ansonjiang/Documents/Chaotic_AI/adapters/python-embedded/__init__.py     | Python   |         33 |         12 |         10 |         55 |
+| /Users/ansonjiang/Documents/Chaotic_AI/adapters/python-embedded/binding.py      | Python   |         83 |          5 |         23 |        111 |
+| /Users/ansonjiang/Documents/Chaotic_AI/adapters/python-embedded/decorators.py   | Python   |         34 |          3 |          6 |         43 |
+| /Users/ansonjiang/Documents/Chaotic_AI/adapters/python-embedded/demo_app.py     | Python   |          0 |          0 |          1 |          1 |
+| Total                                                                           |          |      1,110 |         20 |         41 |      1,171 |
++---------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

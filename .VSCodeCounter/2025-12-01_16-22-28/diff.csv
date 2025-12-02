@@ -1,0 +1,8 @@
+"filename", "language", "Python", "JSON", "comment", "blank", "total"
+"/Users/ansonjiang/Documents/Chaotic_AI/adapters/node-embedded/package-lock.json", "JSON", 0, 941, 0, 1, 942
+"/Users/ansonjiang/Documents/Chaotic_AI/adapters/node-embedded/package.json", "JSON", 0, 19, 0, 0, 19
+"/Users/ansonjiang/Documents/Chaotic_AI/adapters/python-embedded/__init__.py", "Python", 33, 0, 12, 10, 55
+"/Users/ansonjiang/Documents/Chaotic_AI/adapters/python-embedded/binding.py", "Python", 83, 0, 5, 23, 111
+"/Users/ansonjiang/Documents/Chaotic_AI/adapters/python-embedded/decorators.py", "Python", 34, 0, 3, 6, 43
+"/Users/ansonjiang/Documents/Chaotic_AI/adapters/python-embedded/demo_app.py", "Python", 0, 0, 0, 1, 1
+"Total", "-", 150, 960, 20, 41, 1171

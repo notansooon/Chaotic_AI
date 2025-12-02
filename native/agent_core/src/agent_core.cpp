@@ -117,6 +117,11 @@ void kyntrix_agent_init(const KyntrixAgentConfig* cfg) {
         return;
     }
 
+    if (!g_state.initialized) {
+        return
+    } 
+
+    
     std::lock_guard<std::mutex> lock(g_state.mutex);
 
     g_state.ingest_url     = cfg->ingest_url ? cfg->ingest_url : "";

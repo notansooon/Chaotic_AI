@@ -1,96 +1,48 @@
 // adapters/node-embedded/src/hooks/express.ts
-
-import { recordEvent } from "../native.js"; // Sends event → agent_core C++
 import type { Request, Response, NextFunction } from "express";
+import { record } from "../sdk";
 
-let installed = false;
+// Patch an Express app to record middleware + handlers.
+export function installExpressHook(app: any) {
+  const originalUse = app.use;
 
-/**
- * Hooks into Express route and middleware pipeline.
- * This gives high-level PROGRAM EXECUTION telemetry.
- */
-export function installExpressHook(express: any) {
-    if (installed) return;
-    installed = true;
+  app.use = function (...args: any[]) {
+    const last = args[args.length - 1];
 
-    const Router = express.Router;
+    if (typeof last === "function") {
+      const wrapped = function (req: Request, res: Response, next: NextFunction) {
+        const span = `${req.method} ${req.path}`;
+        const start = Date.now();
 
-    // ------------ Hook MIDDLEWARE ------------
-    const origUse = Router.use;
-    Router.use = function (path: any, fn: any) {
-        if (typeof path === "function") {
-            fn = path;
-            path = "/";
+        record("http.middleware.start", {
+          span,
+          nodeKey: "express.middleware",
+          data: { path: req.path },
+        });
+
+        function wrappedNext(err?: any) {
+          const duration = Date.now() - start;
+          record("http.middleware.end", {
+            span,
+            nodeKey: "express.middleware",
+            data: {
+              path: req.path,
+              durationMs: duration,
+              error: err ? String(err) : undefined,
+            },
+          });
+          return next(err);
         }
 
-        const wrapped = function (req: Request, res: Response, next: NextFunction) {
-            const start = Date.now();
+        return last(req, res, wrappedNext);
+      };
 
-            recordEvent({
-                kind: "express.middleware.start",
-                node_key: `MIDDLEWARE ${path}`,
-                span: path,
-                parent_span: req.url,
-                data_json: "{}",
-            });
-
-            fn(req, res, function () {
-                recordEvent({
-                    kind: "express.middleware.end",
-                    node_key: `MIDDLEWARE ${path}`,
-                    span: path,
-                    parent_span: req.url,
-                    data_json: JSON.stringify({ duration: Date.now() - start }),
-                });
-
-                next();
-            });
-        };
-
-        return origUse.call(this, path, wrapped);
-    };
-
-
-    // ------------ Hook ROUTES ------------
-    const METHODS = ["get", "post", "put", "delete", "patch"];
-    for (const method of METHODS) {
-        const orig = Router[method];
-
-        Router[method] = function (path: string, handler: any) {
-            const wrapped = function (req: Request, res: Response, next: NextFunction) {
-                const start = Date.now();
-
-                recordEvent({
-                    kind: "express.route.start",
-                    node_key: `${method.toUpperCase()} ${path}`,
-                    span: path,
-                    parent_span: req.url,
-                    data_json: JSON.stringify({
-                        params: req.params,
-                        query: req.query,
-                    }),
-                });
-
-                handler(req, res, function () {
-                    recordEvent({
-                        kind: "express.route.end",
-                        node_key: `${method.toUpperCase()} ${path}`,
-                        span: path,
-                        parent_span: req.url,
-                        data_json: JSON.stringify({
-                            status: res.statusCode,
-                            duration: Date.now() - start,
-                        }),
-                    });
-
-                    next();
-                });
-            };
-
-            return orig.call(this, path, wrapped);
-        };
+      const newArgs = [...args.slice(0, -1), wrapped];
+      return originalUse.apply(this, newArgs);
     }
 
-    console.log("[Kyntrix] Express hook installed.");
-}
+    return originalUse.apply(this, args);
+  };
 
+  // You can later patch app.get/post/etc similarly if needed
+}

@@ -1,49 +1,64 @@
+const native = require("../build/Release/kyntrix_agent.node") as {
+  init(config: {
+    ingestUrl: string;
+    runId: string;
+    batchSize: number;
+    flushIntervalMs: number;
+  }): void;
 
-const native = require("../../build/Release/kyntrix_agent.node");
+  record(ev: {
+    runId?: string | null;
+    seq: number;
+    ts: number;
+    kind: string;
+    span?: string | null;
+    parentSpan?: string | null;
+    nodeKey?: string | null;
+    dataJson?: string | null;
+  }): void;
 
-export function initAgentCore() {
-    native.init({
-        ingestUrl: process.env.KYNTRIX_INGEST_URL,
-        runId: process.env.KYNTRIX_RUN_ID,
-        batchSize: Number(),
-        flushInterval: Number()
+  flush(): void;
+  shutdown(): void;
+};
 
-    });
-}
+export type NativeAgentConfig = {
+  ingestUrl: string;
+  runId: string;
+  batchSize: number;
+  flushIntervalMs: number;
+};
 
-
-export type RecordArgs = {
+export type NativeEvent = {
   runId?: string | null;
-  seq?: number;          
-  ts?: number;           
+  seq: number;
+  ts: number;
   kind: string;
   span?: string | null;
   parentSpan?: string | null;
   nodeKey?: string | null;
-  dataJson?: string | null;  
+  dataJson?: string | null;
 };
 
-export function recordEvent(ev: {
-  kind: string;
-  runId?: string;
-  seq?: number;
-  ts?: number;
-  span?: string;
-  parentSpan?: string;
-  nodeKey?: string;
-  data?: any;
-}) {
-  const payload: RecordArgs = {
-    runId: ev.runId ?? null,
-    seq: ev.seq ?? -1,
-    ts: ev.ts ?? 0,
-    kind: ev.kind,
-    span: ev.span ?? null,
-    parentSpan: ev.parentSpan ?? null,
-    nodeKey: ev.nodeKey ?? null,
-    dataJson: ev.data ? JSON.stringify(ev.data) : null,
-  };
+// Called once per process to configure C++ agent_core
+export function nativeInit(cfg: NativeAgentConfig) {
+  native.init({
+    ingestUrl: cfg.ingestUrl,
+    runId: cfg.runId,
+    batchSize: cfg.batchSize,
+    flushIntervalMs: cfg.flushIntervalMs,
+  });
+}
 
-  native.record(payload);
+// Called for every telemetry event
+export function nativeRecord(ev: NativeEvent) {
+  native.record(ev);
+}
+
+export function nativeFlush() {
+  native.flush();
+}
+
+export function nativeShutdown() {
+  native.shutdown();
 }
 
