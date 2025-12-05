@@ -12,7 +12,11 @@ KyntrixDaemonServer::KyntrixDaemonServer(const std::string& socket_path)
     : m_sock_fd(-1), m_socket_path(socket_path) {
 
     m_sock_fd = ::socket(AF_UNIX, SOCK_STREAM, 0);
-    if (m_sock_fd < 0) throw std::runtime_error("socket() failed");
+    if (m_sock_fd < 0) {
+        
+        throw std::runtime_error("socket() failed");
+    }
+    
 
     ::unlink(socket_path.c_str());
     sockaddr_un addr{};

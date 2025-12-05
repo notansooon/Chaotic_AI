@@ -5,8 +5,9 @@ class KyntrixDaemonServer {
     public:
         explicit KyntrixDaemonServer(const std::string& socket_path);
         ~KyntrixDaemonServer();
-
+        
         void run();
+
 
     private:
         int m_socket_fd;
