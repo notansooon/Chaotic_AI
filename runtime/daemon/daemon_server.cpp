@@ -13,14 +13,16 @@ KyntrixDaemonServer::KyntrixDaemonServer(const std::string& socket_path)
 
     m_sock_fd = ::socket(AF_UNIX, SOCK_STREAM, 0);
     if (m_sock_fd < 0) {
-        
+
         throw std::runtime_error("socket() failed");
     }
     
-
     ::unlink(socket_path.c_str());
+
     sockaddr_un addr{};
+
     addr.sun_family = AF_UNIX;
+
     std::strncpy(addr.sun_path, socket_path.c_str(), sizeof(addr.sun_path)-1);
 
     if (::bind(m_sock_fd, (sockaddr*)&addr, sizeof(addr)) < 0) {

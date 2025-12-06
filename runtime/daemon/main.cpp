@@ -6,7 +6,6 @@ int main(int argc, char* argv[]) {
     std::cout << "Starting Kyntrix Daemon Server..." << std::endl;
 
     std::string socket_path = "/var/run/kyntrixd.sock";
-
     if (argc > 1) {
         socket_path = argv[1];
     }
