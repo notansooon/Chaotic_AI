@@ -1,0 +1,10 @@
+/Users/ansonjiang/Documents/Chaotic_AI/build/CMakeFiles/edit_cache.dir
+/Users/ansonjiang/Documents/Chaotic_AI/build/CMakeFiles/rebuild_cache.dir
+/Users/ansonjiang/Documents/Chaotic_AI/build/runtime/CMakeFiles/edit_cache.dir
+/Users/ansonjiang/Documents/Chaotic_AI/build/runtime/CMakeFiles/rebuild_cache.dir
+/Users/ansonjiang/Documents/Chaotic_AI/build/runtime/daemon/CMakeFiles/kyntrixd.dir
+/Users/ansonjiang/Documents/Chaotic_AI/build/runtime/daemon/CMakeFiles/edit_cache.dir
+/Users/ansonjiang/Documents/Chaotic_AI/build/runtime/daemon/CMakeFiles/rebuild_cache.dir
+/Users/ansonjiang/Documents/Chaotic_AI/build/runtime/container/CMakeFiles/kyntrix_container.dir
+/Users/ansonjiang/Documents/Chaotic_AI/build/runtime/container/CMakeFiles/edit_cache.dir
+/Users/ansonjiang/Documents/Chaotic_AI/build/runtime/container/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,2 @@
+/usr/bin/ar qc libkyntrix_container.a CMakeFiles/kyntrix_container.dir/ct_image.cpp.o CMakeFiles/kyntrix_container.dir/ct_mount.cpp.o CMakeFiles/kyntrix_container.dir/ct_namespace.cpp.o
+/usr/bin/ranlib libkyntrix_container.a

@@ -1,0 +1,10 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/ansonjiang/Documents/Chaotic_AI/build/cmake_install.cmake",
+		"/Users/ansonjiang/Documents/Chaotic_AI/build/runtime/cmake_install.cmake",
+		"/Users/ansonjiang/Documents/Chaotic_AI/build/runtime/daemon/cmake_install.cmake",
+		"/Users/ansonjiang/Documents/Chaotic_AI/build/runtime/container/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
