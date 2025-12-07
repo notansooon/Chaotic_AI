@@ -7,8 +7,8 @@ import { channel } from 'diagnostics_channel';
 import { error } from 'console';
 dotenv.config();
 
-const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
-const WS_PORT = Number(process.env.WS_PORT) || 8080;
+const REDIS_URL = process.env.REDIS_URL;
+const WS_PORT = Number(process.env.WS_PORT);
 
 
 const subscribers = new Map<string, Set<Client>>();

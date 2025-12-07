@@ -1,11 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
 import { runsRouter } from "./runs";
-import { runRouter } from "../agents/routers/run";
+
 
 
 const app = express();
-app.use("/", runRouter);
+app.use("/", runsRouter);
 
 const PORT = Number(process.env.INSTANCE_MANAGER)
 

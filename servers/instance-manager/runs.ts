@@ -1,10 +1,11 @@
 import { Router } from "express"
 import { startInstance, stopInstance  } from "./daemonClient";
+
+
+
 export const runsRouter = Router()
 
-
-
-runsRouter.post("runs/start", async (res, req) => {
+runsRouter.post("runs/start", async (req, res) => {
     try {
         const { runId, template, workspacePath, entry } = req.body ?? {}
 
@@ -31,10 +32,16 @@ runsRouter.post("runs/start", async (res, req) => {
         }
 
     }
+    catch (err) {
+        res.status(500).json({
+            error: "Daemon_False"
+        })
+
+    }
 });
 
 
-runsRouter.post("runs/stop", (res, req) => {
+runsRouter.post("runs/stop", (req, res) => {
     const { runId } = req.body ?? {}
 
 
