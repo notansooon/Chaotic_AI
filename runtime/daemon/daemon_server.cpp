@@ -11,10 +11,10 @@
 using json = nlohmann::json;
 
 KyntrixDaemonServer::KyntrixDaemonServer(const std::string& socket_path)
-    : m_sock_fd(-1), m_socket_path(socket_path) {
+    : m_socket_fd(-1), m_socket_path(socket_path) {
 
-    m_sock_fd = ::socket(AF_UNIX, SOCK_STREAM, 0);
-    if (m_sock_fd < 0) {
+    m_socket_fd = ::socket(AF_UNIX, SOCK_STREAM, 0);
+    if (m_socket_fd < 0) {
 
         throw std::runtime_error("socket() failed");
     }
@@ -27,25 +27,27 @@ KyntrixDaemonServer::KyntrixDaemonServer(const std::string& socket_path)
 
     std::strncpy(addr.sun_path, socket_path.c_str(), sizeof(addr.sun_path)-1);
 
-    if (::bind(m_sock_fd, (sockaddr*)&addr, sizeof(addr)) < 0) {
+    if (::bind(m_socket_fd, (sockaddr*)&addr, sizeof(addr)) < 0) {
         throw std::runtime_error("bind() failed");
     }
-    if (::listen(m_sock_fd, 16) < 0) {
+    if (::listen(m_socket_fd, 16) < 0) {
         throw std::runtime_error("listen() failed");
     }
 }
 
 KyntrixDaemonServer::~KyntrixDaemonServer() {
-    if (m_sock_fd >= 0) ::close(m_sock_fd);
+    if (m_socket_fd >= 0) ::close(m_socket_fd);
     ::unlink(m_socket_path.c_str());
 }
 
 void KyntrixDaemonServer::run() {
-    InstanceManager manager;
+    
 
     while (true) {
-        int client_fd = ::accept(m_sock_fd, nullptr, nullptr);
-        if (client_fd < 0) continue;
+        int client_fd = ::accept(m_socket_fd, nullptr, nullptr);
+        if (client_fd < 0) {
+            continue;
+        }
         handle_client(client_fd); 
         ::close(client_fd);
     }

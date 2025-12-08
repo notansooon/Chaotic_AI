@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/Users/ansonjiang/Documents/Chaotic_AI/runtime/container
+CXX_INCLUDES = -I/Users/ansonjiang/Documents/Chaotic_AI/external -I/Users/ansonjiang/Documents/Chaotic_AI/runtime/container
 
 CXX_FLAGSarm64 = -std=c++20 -arch arm64 -Wall -Wextra -Wpedantic
 
