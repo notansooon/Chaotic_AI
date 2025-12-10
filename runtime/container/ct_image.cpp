@@ -1,5 +1,6 @@
 #include "ct_image.h"
 #include <string>
+#include <stdexcept>
 
 
 

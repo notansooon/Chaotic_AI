@@ -7,6 +7,7 @@
 #include "ct_mount.h"
 #include "ct_image.h"
 #include <sched.h>
+#include <memory>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <vector>
@@ -57,6 +58,8 @@ pid_t spawn_container(ContainerTemplate tmpl,
 }
 
 static int container_child_main(void* arg) {
+
+    ContainerArgs cargs;
     std::unique_ptr<ContainerArgs> cargs((ContainerArgs*)arg);
 
     // Mount & pivot_root into rootfs

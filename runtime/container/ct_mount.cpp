@@ -5,7 +5,9 @@
 
 #include <sys/mount.h>
 #include <sys/stat.h>
+
 #include <sys/types.h>
+#include <sys/syscall.h>
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
