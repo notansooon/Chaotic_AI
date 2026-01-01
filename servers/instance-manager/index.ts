@@ -5,7 +5,7 @@ import { runsRouter } from "./runs";
 
 
 const app = express();
-app.use("/", runsRouter);
+app.use("/runs", runsRouter);
 
 const PORT = Number(process.env.INSTANCE_MANAGER)
 
