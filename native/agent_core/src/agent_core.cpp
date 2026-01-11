@@ -52,7 +52,7 @@ static std::string escape_json(const std::string& s) {
 
 static std::string to_ndjson(const std::vector<InternalEvent>& batch) {
     std::string ndjson;
-    ndjson.reserve(batch.size() * 200); // rough guess
+    ndjson.reserve(batch.size() * 200); 
 
     for (const auto& e : batch) {
         ndjson += "{";

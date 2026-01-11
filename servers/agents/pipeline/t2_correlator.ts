@@ -60,12 +60,6 @@ export type GraphDelta = {
 
 
 
-
-
-
-
-
-// T3
 export function buildDelta(runId: string, state: GraphState) {
     return {
         runId, 
@@ -75,5 +69,8 @@ export function buildDelta(runId: string, state: GraphState) {
         counter: Object.fromEntries(state.counter.entries()),
     }
 }
+
+
+
 
 

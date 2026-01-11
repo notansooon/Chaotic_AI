@@ -15,35 +15,49 @@ export interface StartInstance {
     
 }
 
-function MessageDaemon(payload: Object): Promise<boolean> {
+function MessageDaemon(payload: Object): Promise<any> { // Change Any to something else later
 
     return new Promise((resolve, reject) => {
         
 
         const socket = net.createConnection({ path: SocketPath });
+        
 
         socket.on("connect", () => {
             const json = JSON.stringify(payload)
             socket.write(json)
+            socket.end()
         })
 
-        socket.on("data", (buf) => {
+        let responseBuffer = "";
 
-            try {
-                const res = JSON.parse(buff);
-                resolve(true)
-            }
-            catch (err) {
-                reject(err);
-            }
-            finally {
-                socket.end();
-            }
+        socket.on("data", (data) => {
+            responseBuffer += data.toString();
+        });
 
-        })
 
         socket.on("error", (error) => {
             reject(error)
+        })
+
+        socket.on("end", () => {
+
+            try {
+        
+                if (!responseBuffer) {
+                    return resolve({ status: "ok" });
+                }
+                    const response = JSON.parse(responseBuffer);
+                if (response.error) {
+                    reject(new Error(response.error));
+                } else {
+                    resolve(response);
+                }
+            } catch (e) {
+                // Fallback for non-JSON ack
+                resolve({ status: "ok", raw: responseBuffer });
+            }
+
         })
 
 

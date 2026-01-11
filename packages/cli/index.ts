@@ -1,5 +1,6 @@
 import { Command } from "commander"
 import fs from "fs/promises"
+
 import chalk from "chalk"
 import ora from "ora"
 import { glob } from "glob"
@@ -71,7 +72,9 @@ program
 
             spinner.stop()
 
-            if response.
+            if (result.status === "crashed") {
+
+            }
 
 
         }
