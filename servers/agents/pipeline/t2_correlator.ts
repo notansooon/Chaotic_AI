@@ -14,6 +14,7 @@ export type GraphState = {
     lastSeq: number;
     node: Map<string, {id: string, label: string}>;
     edges: Array<{ from : string, to: string }>;
+    edgeSet: Set<string>; // Optimization for O(1) duplicate checks
     counter: Map<string, number>;
 };
 
@@ -22,6 +23,7 @@ export function initState(): GraphState {
         lastSeq: -1,
         node: new Map(),
         edges: [],
+        edgeSet: new Set(),
         counter: new Map(),
     }
 }
@@ -42,7 +44,11 @@ export function applyEvent(state: GraphState, event: TalEvent) {
     
 
     if (event.parentSpan) {
-        state.edges.push({ from: event.parentSpan, to: nodeId });
+        const edgeKey = `${event.parentSpan}->${nodeId}`;
+        if (!state.edgeSet.has(edgeKey)) {
+            state.edges.push({ from: event.parentSpan, to: nodeId });
+            state.edgeSet.add(edgeKey);
+        }
     }
 
     state.counter.set(event.kind, (state.counter.get(event.kind) ?? 0) + 1);
@@ -69,8 +75,3 @@ export function buildDelta(runId: string, state: GraphState) {
         counter: Object.fromEntries(state.counter.entries()),
     }
 }
-
-
-
-
-

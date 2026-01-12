@@ -1,11 +1,13 @@
 import net from "net";
 import dotenv from "dotenv";
-import { json } from "stream/consumers";
 dotenv.config();
 
 
 
 const SocketPath = process.env.DAEMON_SOCKET_PATH;
+if (!SocketPath) {
+    throw new Error("DAEMON_SOCKET_PATH is not defined in environment variables.");
+}
 
 export interface StartInstance {
     runId: string;
@@ -15,9 +17,21 @@ export interface StartInstance {
     
 }
 
-function MessageDaemon(payload: Object): Promise<any> { // Change Any to something else later
+interface DaemonResponse {
+    status: "ok" | "error";
+    error?: string;
+    raw?: string;
+    [key: string]: any;
+}
 
-    return new Promise((resolve, reject) => {
+type DaemonPayload = 
+    | ({ action: "start" } & StartInstance)
+    | { action: "stop"; runId: string };
+
+
+function MessageDaemon(payload: DaemonPayload): Promise<DaemonResponse> { 
+
+    return new Promise<DaemonResponse>((resolve, reject) => {
         
 
         const socket = net.createConnection({ path: SocketPath });
@@ -45,13 +59,13 @@ function MessageDaemon(payload: Object): Promise<any> { // Change Any to somethi
             try {
         
                 if (!responseBuffer) {
-                    return resolve({ status: "ok" });
+                    return resolve({ status: "ok" } as DaemonResponse);
                 }
                     const response = JSON.parse(responseBuffer);
                 if (response.error) {
                     reject(new Error(response.error));
                 } else {
-                    resolve(response);
+                    resolve(response as DaemonResponse);
                 }
             } catch (e) {
                 // Fallback for non-JSON ack
@@ -65,7 +79,7 @@ function MessageDaemon(payload: Object): Promise<any> { // Change Any to somethi
 }
 
 
-export function startInstance(req: StartInstance): Promise<boolean> {
+export function startInstance(req: StartInstance): Promise<DaemonResponse> {
     return MessageDaemon({
         action: "start",
         runId: req.runId,
@@ -75,7 +89,7 @@ export function startInstance(req: StartInstance): Promise<boolean> {
     })
 }
 
-export function stopInstance(runId: string):Promise<boolean> {
+export function stopInstance(runId: string): Promise<DaemonResponse> {
     return MessageDaemon({
         action: "stop",
         runId: runId,
