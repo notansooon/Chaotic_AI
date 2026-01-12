@@ -45,7 +45,7 @@ program
         try {
             await runWithTrace(entryFile, options);
         } catch (error) {
-            console.error(chalk.red(`\n❌ Fatal error: ${error instanceof Error ? error.message : String(error)}`));
+            console.error(chalk.red(`\n Error: ${error instanceof Error ? error.message : String(error)}`));
             process.exit(1);
         }
     })
@@ -75,7 +75,7 @@ async function runWithTrace(entryFile: string, options: any) {
     try {
         await fs.access(entryFile);
     } catch {
-        console.error(chalk.red(`❌ File not found: ${entryFile}`));
+        console.error(chalk.red(`File not found: ${entryFile}`));
         process.exit(1);
     }
 
@@ -99,7 +99,7 @@ async function runWithTrace(entryFile: string, options: any) {
                     fileMap[fp] = content;
                     fileCount++;
                 } catch (err) {
-                    // Skip files we can't read
+                    
                     continue;
                 }
             }
@@ -107,7 +107,7 @@ async function runWithTrace(entryFile: string, options: any) {
 
         spinner.text = `Uploading ${fileCount} files...`;
 
-        // Submit execution request
+        
         const response = await fetch(`${API_URL}/runs/start`, {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
@@ -167,7 +167,7 @@ async function runWithTrace(entryFile: string, options: any) {
         
         if (error instanceof Error) {
             if (error.message.includes('ECONNREFUSED')) {
-                console.error(chalk.red('\n❌ Cannot connect to Kyntrix server'));
+                console.error(chalk.red('\n Cannot connect to Kyntrix server'));
                 console.error(chalk.yellow(`   Make sure the server is running at ${API_URL}`));
                 console.error(chalk.dim(`   Start it with: npm run dev`));
             } else {
