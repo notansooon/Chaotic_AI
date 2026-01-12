@@ -3,124 +3,246 @@ import { startInstance, stopInstance } from "./daemonClient";
 import { randomUUID } from "crypto";
 import fs from "fs";
 import path from "path";
-
-
-// Assuming you have a redis client set up in a separate file
-// You need a DEDICATED connection for subscriptions (Redis requirement)
-
-
 import { createClient } from "redis";
 
-export const runsRouter = Router()
+export const runsRouter = Router();
 
+// Redis subscriber for listening to completion events
+const redisSubscriber = createClient();
+redisSubscriber.connect().catch(console.error);
+
+/**
+ * Write files to disk (for file-upload mode)
+ */
 function writeFilesToDisk(workspacePath: string, files: Record<string, string>) {
-
     if (!fs.existsSync(workspacePath)) {
         fs.mkdirSync(workspacePath, { recursive: true });
     }
-    for (const [file_name, file_content] of Object.entries(files)) {
-
+    
+    for (const [filePath, fileContent] of Object.entries(files)) {
+        const fullPath = path.join(workspacePath, filePath);
+        const dir = path.dirname(fullPath);
+        
+        // Create nested directories if needed
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        
+        fs.writeFileSync(fullPath, fileContent, 'utf-8');
     }
 }
 
+/**
+ * Main execution endpoint
+ * Handles both file-upload  and git-based 
+ */
 runsRouter.post("/start", async (req, res) => {
     try {
-        const { entry_point, files, language } = req.body ?? {}
-        const runId = randomUUID()
+        const { 
+            execution_mode,  
+            entry_point, 
+            files, 
+            language,
+            // Git-specific fields
+            git_url,
+            commit_sha,
+            branch
+        } = req.body ?? {};
 
+        const runId = randomUUID();
+        const traceId = `trace_${runId}`;
 
-        if (!files || !entry_point) {
-            return res.status(400).json({
-                error: "Missing Properties"
-            })
+        // Validation based on execution mode
+        if (execution_mode === "git") {
+            // Git mode validation
+            if (!git_url || !commit_sha || !entry_point) {
+                return res.status(400).json({
+                    error: "Missing required fields for git mode: git_url, commit_sha, entry_point"
+                });
+            }
+        } else {
+            // File upload mode validation (default)
+            if (!files || !entry_point) {
+                return res.status(400).json({
+                    error: "Missing required fields for file mode: files, entry_point"
+                });
+            }
         }
 
-        const workspacePath = `/tmp/kyntrix/${runId}`;
-        writeFilesToDisk(workspacePath, files)
+        // Setup workspace
+        let workspacePath: string;
+        let cacheHit = false;
+
+        if (execution_mode === "git") {
+            // Git mode: workspace will be managed by daemon's GitManager
+            // Just pass the git info, daemon will handle cloning/caching
+            workspacePath = `/cache/repos/${commit_sha.slice(0, 8)}`;
+            
+            // Note: In real implementation, daemon will return cache_hit status
+            // For now, we'll check if the path exists (simplified)
+            cacheHit = fs.existsSync(workspacePath);
+            
+        } else {
+            // File upload mode: write files to temporary workspace
+            workspacePath = `/tmp/kyntrix/${runId}`;
+            writeFilesToDisk(workspacePath, files);
+        }
+
+        // Setup Redis subscription for completion notification
+        const channel = `run:${runId}:complete`;
         
-
-        const channel = '`run:${runId}:complete`;'
-
         const completionPromise = new Promise((resolve, reject) => {
-            // Safety Timeout: Don't hang forever if the Daemon crashes
+            // Safety timeout
             const timeout = setTimeout(() => {
                 redisSubscriber.unsubscribe(channel);
-                reject(new Error("Execution timed out"));
-            }, 30000); // 30 seconds
+                reject(new Error("Execution timed out after 30s"));
+            }, 30000);
 
-            // Listen for the "Done" message from T2 Correlator
+            // Listen for completion from T2 Correlator
             redisSubscriber.subscribe(channel, (message) => {
                 clearTimeout(timeout);
-                redisSubscriber.unsubscribe(channel); // Clean up listener
-                resolve(JSON.parse(message));
+                redisSubscriber.unsubscribe(channel);
+                
+                try {
+                    const result = JSON.parse(message);
+                    resolve(result);
+                } catch (err) {
+                    reject(new Error("Failed to parse completion message"));
+                }
             });
         });
 
-
-        
-
-
+        // Prepare payload for daemon
         const payload = {
             runId,
+            traceId,
             template: (language || "python") as "node" | "python",
-            workspacePath,
-            entry:  entry_point,
+            entry: entry_point,
             
-        }
+            // Mode-specific fields
+            ...(execution_mode === "git" 
+                ? {
+                    mode: "git" as const,
+                    gitUrl: git_url,
+                    commitSha: commit_sha,
+                    branch: branch,
+                    workspacePath: workspacePath
+                }
+                : {
+                    mode: "files" as const,
+                    workspacePath: workspacePath,
+                    files: files
+                }
+            )
+        };
 
-        const flag = await startInstance(payload)
-
-
-        if (!flag) {
+        // Start execution via daemon
+        const daemonResponse = await startInstance(payload);
+        
+        if (!daemonResponse) {
             return res.status(500).json({
-                error: "Daemon_False"
-            })
+                error: "Failed to start instance in daemon"
+            });
         }
 
-        const graph = await completionPromise;
+        // Wait for execution to complete and get trace
+        const executionResult = await completionPromise;
 
+        // Build response in format CLI expects
+        const response = {
+            runId: runId,
+            status: executionResult.status || "success",
+            output: executionResult.output || "",
+            error: executionResult.error,
+            timeline: executionResult.timeline || [],
+            trace_url: `http://localhost:3000/trace/${runId}`,
+            cache_hit: cacheHit
+        };
 
-        return res.status(200).json(graph)
+        return res.status(200).json(response);
 
-    }
-    catch (err) {
+    } catch (err) {
+        console.error("[Instance Manager] Execution failed:", err);
+        
         return res.status(500).json({
-            error: "Daemon_False"
-        })
+            error: err instanceof Error ? err.message : "Internal server error"
+        });
+    }
+});
 
+/**
+ * Stop a running execution
+ */
+runsRouter.post("/stop", async (req, res) => {
+    try {
+        const { runId } = req.body ?? {};
+        
+        if (!runId) {
+            return res.status(400).json({
+                error: "runId is required"
+            });
+        }
+
+        const success = await stopInstance(runId);
+        
+        if (!success) {
+            return res.status(500).json({
+                error: "Failed to stop instance"
+            });
+        }
+
+        return res.status(200).json({
+            status: "stopped",
+            runId: runId
+        });
+        
+    } catch (err) {
+        console.error("[Instance Manager] Stop failed:", err);
+        
+        return res.status(500).json({
+            error: err instanceof Error ? err.message : "Failed to stop instance"
+        });
     }
 });
 
 
-runsRouter.post("/stop", (req, res) => {
-    const { runId } = req.body ?? {}
 
 
-    if (!runId) {
-        return res.status(400).json({
-            error: "Run_Id not detected"
-        })
-    }
 
-    const flag = stopInstance(runId)
+/**
+ * Get trace for a specific run (for the `kyntrix trace` CLI command)
+ */
+runsRouter.get("/api/v1/trace/:runId", async (req, res) => {
+    try {
+        const { runId } = req.params;
+        
+        // In production, you'd fetch this from a database or cache
+        // For now, try to get from Redis
+        const redisClient = createClient();
+        await redisClient.connect();
+        
+        const traceKey = `trace:${runId}`;
+        const traceData = await redisClient.get(traceKey);
+        
+        await redisClient.disconnect();
+        
+        if (!traceData) {
+            return res.status(404).json({
+                error: "Trace not found",
+                runId: runId
+            });
+        }
 
-    if (!flag) {
+        const trace = JSON.parse(traceData);
+        return res.status(200).json(trace);
+        
+    } catch (err) {
+        console.error("[Instance Manager] Trace fetch failed:", err);
+        
         return res.status(500).json({
-            error: "Daemon_False"
-        })
+            error: "Failed to fetch trace"
+        });
     }
+});
 
-    return res.status(200).json({
-        status: "start"
-    })
-
-
-})
-
-
-
-
-
-
-
-
+export default runsRouter;
