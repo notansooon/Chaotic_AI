@@ -28,14 +28,12 @@ const clients = new Set<Client>();
 export const attachWebSocketServer = (server: http.Server) => {
     const wss = new WebSocketServer({ server });
 
-    sub.psubscribe('update:*', (error) => {
+    sub.psubscribe('updates:*', (error) => {
         if (error) {
-            console.error('[ws-hub] Failed to subscribe to update:*', error);
+            console.error('[ws-hub] Failed to subscribe to updates:*', error);
         }
-    } ).then(() => {
-        
-        console.log('[ws-hub] Subscribed to update:*');
-        
+    }).then(() => {
+        console.log('[ws-hub] Subscribed to updates:*');
     });
 
     sub.on('pmessage', (_pattern, channel, message) => {

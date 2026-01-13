@@ -14,13 +14,13 @@ runRouter.post("/dev/run", async (req, res) => {
     res.json({  id: run.id, status: run.status, createdAt: run.createdAt})
 })
 
-runRouter.get("/run", (req, res) => {
-    const run = prisma.run.findMany({
+runRouter.get("/run", async (req, res) => {
+    const runs = await prisma.run.findMany({
         orderBy: {
             createdAt: 'desc'
         },
         take: 20,
     });
-    res.json(run);
+    res.json(runs);
 })
 

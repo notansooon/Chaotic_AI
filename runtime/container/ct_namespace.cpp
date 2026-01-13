@@ -58,8 +58,6 @@ pid_t spawn_container(ContainerTemplate tmpl,
 }
 
 static int container_child_main(void* arg) {
-
-    ContainerArgs cargs;
     std::unique_ptr<ContainerArgs> cargs((ContainerArgs*)arg);
 
     // Mount & pivot_root into rootfs
@@ -67,34 +65,35 @@ static int container_child_main(void* arg) {
         return 1;
     }
 
-    
     ::setenv("KYNTRIX_RUN_ID", cargs->run_id.c_str(), 1);
     ::setenv("KYNTRIX_INGEST_URL", "http://agents:8081/ingest/tal", 1);
     ::setenv("KYNTRIX_BATCH_SIZE", "100", 1);
     ::setenv("KYNTRIX_FLUSH_INTERVAL", "1000", 1);
 
-    
+    // Build argv - need to keep strings alive until execvp
+    std::vector<std::string> arg_strings;
     std::vector<char*> argv;
 
     if (cargs->tmpl == ContainerTemplate::Node) {
-        
         ::setenv("NODE_OPTIONS", "--require /opt/kyntrix/node-embedded/dist/autoHook.js", 1);
 
-        argv.push_back((char*)"node");
-        argv.push_back((char*)("/workspace/" + cargs->entry_script).c_str());
-        argv.push_back(nullptr);
+        arg_strings.push_back("node");
+        arg_strings.push_back("/workspace/" + cargs->entry_script);
     } else {
-        
-        argv.push_back((char*)"python");
-        argv.push_back((char*)"-m");
-        argv.push_back((char*)"kyntrix_agent.autohook");
-        argv.push_back((char*)("/workspace/" + cargs->entry_script).c_str());
-        argv.push_back(nullptr);
+        arg_strings.push_back("python");
+        arg_strings.push_back("-m");
+        arg_strings.push_back("kyntrix_agent.autohook");
+        arg_strings.push_back("/workspace/" + cargs->entry_script);
     }
 
-    
+    // Build argv from persistent strings
+    for (auto& s : arg_strings) {
+        argv.push_back(const_cast<char*>(s.c_str()));
+    }
+    argv.push_back(nullptr);
+
     ::execvp(argv[0], argv.data());
-    
+
     return 1;
 }
 

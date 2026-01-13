@@ -17,3 +17,4 @@ endif()
 
 
 add_subdirectory(runtime)
+add_subdirectory(native/agent_core)

@@ -87,10 +87,18 @@ ingestRouter.post("/tal", (req, res) => {
 
 
     stream.on('end', async () => {
+        // Flush any remaining events in the pipeline
         if (amount % 512 != 0) {
             await pipeline.exec();
-            res.status(200).json({ status: 'ok', ingested: amount });
-
         }
-    })
+        // Always send response
+        res.status(200).json({ status: 'ok', ingested: amount });
+    });
+
+    stream.on('error', (err) => {
+        console.error('[ingest] stream error:', err);
+        if (!res.headersSent) {
+            res.status(500).json({ error: 'ingest failed' });
+        }
+    });
 })
