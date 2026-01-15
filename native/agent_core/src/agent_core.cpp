@@ -1,9 +1,10 @@
-#include <include/kyntrix/agent_core.h>
+#include "kyntrix/agent_core.h"
 #include "logging.h"
 
 #include <vector>
 #include <string>
 #include <mutex>
+#include <curl/curl.h>
 
 // ---------- Internal types ----------
 
@@ -80,13 +81,43 @@ static std::string to_ndjson(const std::vector<InternalEvent>& batch) {
     return ndjson;
 }
 
-// For now, this is a stub. Later: real HTTP client.
-static bool http_post_stub(const std::string& url, const std::string& body) {
-    log_info("[agent_core] HTTP POST to %s", url.c_str());
-    log_info("[agent_core] Body (%zu bytes):", body.size());
-    std::fwrite(body.data(), 1, body.size(), stderr);
-    std::fprintf(stderr, "\n");
-    return true;
+// HTTP POST implementation using libcurl
+static bool http_post(const std::string& url, const std::string& body) {
+    if (url.empty()) {
+        log_error("[agent_core] http_post: empty URL");
+        return false;
+    }
+
+    CURL* curl = curl_easy_init();
+    if (!curl) {
+        log_error("[agent_core] curl_easy_init failed");
+        return false;
+    }
+
+    struct curl_slist* headers = nullptr;
+    headers = curl_slist_append(headers, "Content-Type: application/x-ndjson");
+
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_POST, 1L);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)body.size());
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);  // 5 second timeout
+    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 2L);
+
+    CURLcode res = curl_easy_perform(curl);
+
+    bool success = (res == CURLE_OK);
+    if (!success) {
+        log_error("[agent_core] http_post failed: %s", curl_easy_strerror(res));
+    } else {
+        log_info("[agent_core] http_post success: %zu bytes to %s", body.size(), url.c_str());
+    }
+
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+
+    return success;
 }
 
 static void flush_locked() {
@@ -104,7 +135,7 @@ static void flush_locked() {
     std::string body = to_ndjson(batch);
     if (body.empty()) return;
 
-    http_post_stub(g_state.ingest_url, body);
+    http_post(g_state.ingest_url, body);
 }
 
 // ---------- Public API ----------
@@ -117,11 +148,11 @@ void kyntrix_agent_init(const KyntrixAgentConfig* cfg) {
         return;
     }
 
-    if (!g_state.initialized) {
-        return
-    } 
+    if (g_state.initialized) {
+        log_info("[agent_core] already initialized, skipping");
+        return;
+    }
 
-    
     std::lock_guard<std::mutex> lock(g_state.mutex);
 
     g_state.ingest_url     = cfg->ingest_url ? cfg->ingest_url : "";
@@ -203,5 +234,4 @@ void kyntrix_agent_shutdown(void) {
     log_info("[agent_core] shutdown complete");
 }
 
- // extern "C"
-
+} // extern "C"
