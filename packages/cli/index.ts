@@ -6,8 +6,45 @@ import fs from "fs/promises"
 import chalk from "chalk"
 import ora from "ora"
 import path from "path"
+import os from "os"
 
-const API_URL = process.env.KYNTRIX_API || 'http://localhost:3000';
+// Config file location
+const CONFIG_DIR = path.join(os.homedir(), '.kyntrix');
+const CONFIG_FILE = path.join(CONFIG_DIR, 'config.json');
+
+// Load config
+async function loadConfig(): Promise<{ apiKey?: string; apiUrl?: string }> {
+    try {
+        const data = await fs.readFile(CONFIG_FILE, 'utf-8');
+        return JSON.parse(data);
+    } catch {
+        return {};
+    }
+}
+
+async function saveConfig(config: { apiKey?: string; apiUrl?: string }): Promise<void> {
+    await fs.mkdir(CONFIG_DIR, { recursive: true });
+    await fs.writeFile(CONFIG_FILE, JSON.stringify(config, null, 2));
+}
+
+// Get API URL and key
+async function getApiConfig() {
+    const config = await loadConfig();
+    return {
+        apiUrl: process.env.KYNTRIX_API || config.apiUrl || 'http://localhost:3000',
+        apiKey: process.env.KYNTRIX_API_KEY || config.apiKey
+    };
+}
+
+// Get auth headers
+async function getAuthHeaders(): Promise<Record<string, string>> {
+    const { apiKey } = await getApiConfig();
+    if (apiKey) {
+        return { 'Authorization': `Bearer ${apiKey}` };
+    }
+    return {};
+}
+
 const program = new Command();
 
 interface ExecutionResult {
@@ -41,8 +78,104 @@ interface GitInfo {
 program
     .name("kyntrix")
     .description("Execution and Observability Platform for AI Agents")
-    .version("0.0.1")
+    .version("0.1.0")
 
+// Login command
+program
+    .command("login")
+    .description("Authenticate with Kyntrix cloud")
+    .option('-k, --api-key <key>', 'API key')
+    .option('--api-url <url>', 'API URL (default: https://api.kyntrix.io)')
+    .action(async (options) => {
+        const apiKey = options.apiKey || process.env.KYNTRIX_API_KEY;
+
+        if (!apiKey) {
+            console.error(chalk.red('Error: API key required'));
+            console.log('');
+            console.log('Usage:');
+            console.log('  kyntrix login --api-key <your-api-key>');
+            console.log('  # or');
+            console.log('  export KYNTRIX_API_KEY=<your-api-key>');
+            console.log('');
+            console.log('Get your API key at: https://app.kyntrix.io/settings/api');
+            process.exit(1);
+        }
+
+        const apiUrl = options.apiUrl || 'https://api.kyntrix.io';
+        const spinner = ora('Validating API key...').start();
+
+        try {
+            const response = await fetch(`${apiUrl}/health`, {
+                headers: { 'Authorization': `Bearer ${apiKey}` }
+            });
+
+            if (response.ok) {
+                await saveConfig({ apiKey, apiUrl });
+                spinner.succeed('Successfully authenticated!');
+                console.log(`Config saved to ${chalk.dim(CONFIG_FILE)}`);
+            } else {
+                spinner.fail('Authentication failed: Invalid API key');
+                process.exit(1);
+            }
+        } catch (err) {
+            // Server unreachable, save anyway
+            await saveConfig({ apiKey, apiUrl });
+            spinner.warn('Could not validate (server unreachable), config saved');
+        }
+    });
+
+// Config command
+program
+    .command("config")
+    .description("View or update configuration")
+    .option('--api-url <url>', 'Set API URL')
+    .option('--api-key <key>', 'Set API key')
+    .option('--show', 'Show current config')
+    .action(async (options) => {
+        const config = await loadConfig();
+
+        if (options.apiUrl) {
+            config.apiUrl = options.apiUrl;
+            await saveConfig(config);
+            console.log(chalk.green(`API URL set to: ${options.apiUrl}`));
+        }
+
+        if (options.apiKey) {
+            config.apiKey = options.apiKey;
+            await saveConfig(config);
+            console.log(chalk.green('API key updated'));
+        }
+
+        if (options.show || (!options.apiUrl && !options.apiKey)) {
+            const { apiUrl, apiKey } = await getApiConfig();
+            console.log('');
+            console.log('Current configuration:');
+            console.log(`  API URL: ${chalk.cyan(apiUrl)}`);
+            console.log(`  API Key: ${apiKey ? chalk.green(apiKey.slice(0, 12) + '...') : chalk.dim('(not set)')}`);
+            console.log(`  Config:  ${chalk.dim(CONFIG_FILE)}`);
+            console.log('');
+        }
+    });
+
+// Whoami command
+program
+    .command("whoami")
+    .description("Show current authentication status")
+    .action(async () => {
+        const { apiUrl, apiKey } = await getApiConfig();
+
+        if (!apiKey) {
+            console.log(chalk.yellow('Not authenticated'));
+            console.log('Run: kyntrix login --api-key <your-api-key>');
+            return;
+        }
+
+        console.log(`Authenticated: ${chalk.green('Yes')}`);
+        console.log(`API URL: ${chalk.cyan(apiUrl)}`);
+        console.log(`API Key: ${chalk.dim(apiKey.slice(0, 12) + '...')}`);
+    });
+
+// Run command
 program
     .command("run <file_or_url>")
     .description("Run from local file or git repository")
@@ -69,7 +202,12 @@ program
     .action(async (runId) => {
         const spinner = ora('Fetching trace...').start();
         try {
-            const response = await fetch(`${API_URL}/api/v1/trace/${runId}`);
+            const { apiUrl } = await getApiConfig();
+            const authHeaders = await getAuthHeaders();
+
+            const response = await fetch(`${apiUrl}/api/v1/trace/${runId}`, {
+                headers: authHeaders
+            });
             if (!response.ok) {
                 throw new Error(`Failed to fetch trace: ${response.statusText}`);
             }
@@ -289,10 +427,16 @@ async function resolveCommit(repoUrl: string, branch: string): Promise<string> {
 
 async function executeGitBased(gitInfo: GitInfo, spinner: ora.Ora, options: any) {
     spinner.text = 'Submitting git-based execution...';
-    
-    const response = await fetch(`${API_URL}/runs/start`, {
+
+    const { apiUrl } = await getApiConfig();
+    const authHeaders = await getAuthHeaders();
+
+    const response = await fetch(`${apiUrl}/runs/start`, {
         method: "POST",
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            ...authHeaders
+        },
         body: JSON.stringify({
             execution_mode: "git",
             git_url: gitInfo.url,
@@ -302,19 +446,25 @@ async function executeGitBased(gitInfo: GitInfo, spinner: ora.Ora, options: any)
             language: getLanguageFromPath(gitInfo.entryPoint)
         })
     });
-    
+
     await handleResponse(response, spinner, options);
 }
 
 async function executeFileBased(filePath: string, spinner: ora.Ora, options: any) {
     spinner.text = 'Collecting files...';
-    
+
+    const { apiUrl } = await getApiConfig();
+    const authHeaders = await getAuthHeaders();
+
     // Original file upload implementation
     const content = await fs.readFile(filePath, 'utf-8');
-    
-    const response = await fetch(`${API_URL}/runs/start`, {
+
+    const response = await fetch(`${apiUrl}/runs/start`, {
         method: "POST",
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            ...authHeaders
+        },
         body: JSON.stringify({
             execution_mode: "files",
             entry_point: filePath,
@@ -322,7 +472,7 @@ async function executeFileBased(filePath: string, spinner: ora.Ora, options: any
             language: getLanguageFromPath(filePath)
         })
     });
-    
+
     await handleResponse(response, spinner, options);
 }
 
@@ -371,7 +521,8 @@ async function handleResponse(response: Response, spinner: ora.Ora, options: any
     
     // Always show trace URL
     if (result.trace_url || result.runId) {
-        const traceUrl = result.trace_url || `${API_URL}/trace/${result.runId}`;
+        const { apiUrl } = await getApiConfig();
+        const traceUrl = result.trace_url || `${apiUrl}/trace/${result.runId}`;
         console.log(chalk.cyan(`\n🔍 View full trace: ${chalk.underline(traceUrl)}`));
     }
 }
