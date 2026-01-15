@@ -2,20 +2,11 @@ import dotenv from 'dotenv';
 import http from 'http';
 import url from 'url';
 import WebSocket, { WebSocketServer } from 'ws';
-import { Redis } from 'ioredis'
-import { channel } from 'diagnostics_channel';
-import { error } from 'console';
+import { Redis } from 'ioredis';
+
 dotenv.config();
 
-const REDIS_URL = process.env.REDIS_URL;
-const WS_PORT = Number(process.env.WS_PORT);
-
-
-const subscribers = new Map<string, Set<Client>>();
-
-const sub = new Redis(REDIS_URL, { lazyConnect: false });
-
-
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 
 type Client = {
     ws: WebSocket;
@@ -23,17 +14,43 @@ type Client = {
 }
 
 const clients = new Set<Client>();
+let sub: Redis | null = null;
 
+function initRedisSubscriber(): Redis {
+    const redis = new Redis(REDIS_URL, {
+        lazyConnect: true,
+        retryStrategy: (times) => {
+            if (times > 5) {
+                console.error('[ws-hub] Redis connection failed after 5 retries');
+                return null;
+            }
+            return Math.min(times * 200, 2000);
+        }
+    });
+
+    redis.on('error', (err) => {
+        console.error('[ws-hub] Redis error:', err.message);
+    });
+
+    redis.on('connect', () => {
+        console.log('[ws-hub] Redis connected');
+    });
+
+    return redis;
+}
 
 export const attachWebSocketServer = (server: http.Server) => {
-    const wss = new WebSocketServer({ server });
+    const wss = new WebSocketServer({ server, path: undefined });
 
-    sub.psubscribe('updates:*', (error) => {
-        if (error) {
-            console.error('[ws-hub] Failed to subscribe to updates:*', error);
-        }
+    // Initialize Redis subscriber with error handling
+    sub = initRedisSubscriber();
+
+    sub.connect().then(() => {
+        return sub!.psubscribe('updates:*');
     }).then(() => {
         console.log('[ws-hub] Subscribed to updates:*');
+    }).catch((err) => {
+        console.error('[ws-hub] Failed to subscribe:', err.message);
     });
 
     sub.on('pmessage', (_pattern, channel, message) => {
@@ -50,24 +67,31 @@ export const attachWebSocketServer = (server: http.Server) => {
     });
 
     wss.on('connection', (ws, req) => {
-        const { query } = url.parse(req.url || '', true);
-        const runId = query.runId as string;
+        const parsedUrl = url.parse(req.url || '', true);
+        const runId = parsedUrl.query.runId as string;
+
+        // Log connection attempt
+        console.log(`[ws-hub] Connection attempt: path=${parsedUrl.pathname}, runId=${runId}`);
 
         if (!runId) {
             ws.close(1008, 'runId query parameter is required');
             return;
         }
+
         const client = { ws, runId };
         clients.add(client);
-        
+        console.log(`[ws-hub] Client connected for run: ${runId}`);
+
         ws.on('close', () => {
             clients.delete(client);
+            console.log(`[ws-hub] Client disconnected for run: ${runId}`);
+        });
 
-        })
-
-
-    })
-}
+        ws.on('error', (err) => {
+            console.error(`[ws-hub] WebSocket error for run ${runId}:`, err.message);
+        });
+    });
+};
 
 
 

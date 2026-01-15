@@ -70,8 +70,8 @@ ingestRouter.post("/tal", (req, res) => {
             console.log ("Stream data: ", line)
 
             const parsed = TalEvent.parse(JSON.parse(line));
-            const key = `run:${parsed.runId}`;
-            pipeline.xadd(key, '*', 'json', JSON.stringify(parsed));
+            const key = streamKey(parsed.runId);
+            pipeline.xadd(key, '*', 'e', JSON.stringify(parsed));
             amount += 1;
 
             if (amount % 512 == 0) {
