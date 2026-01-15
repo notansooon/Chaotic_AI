@@ -1,0 +1,126 @@
+version: "3.9"
+
+services:
+  # Reverse proxy for HTTPS termination
+  traefik:
+    image: traefik:v2.10
+    command:
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "letsencrypt:/letsencrypt"
+    networks:
+      - kyntrix
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - "redisdata:/data"
+    networks:
+      - kyntrix
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-kyntrix}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-kyntrix}
+    volumes:
+      - "pgdata:/var/lib/postgresql/data"
+    networks:
+      - kyntrix
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-kyntrix}"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  agents:
+    build: ../../servers/agents
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-kyntrix}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-kyntrix}?schema=public
+      REDIS_URL: redis://redis:6379
+      HTTP_PORT: "4318"
+      # API Authentication
+      API_KEY: ${KYNTRIX_API_KEY}
+      # Pipeline configuration
+      STREAM_PREFIX: "tal"
+      GROUP: "graph-worker"
+      BATCH_COUNT: "2000"
+      BLOCK_MS: "20"
+      FPS: "5"
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - kyntrix
+    labels:
+      - "traefik.enable=true"
+      # HTTPS routes
+      - "traefik.http.routers.agents.rule=Host(`api.${DOMAIN}`)"
+      - "traefik.http.routers.agents.entrypoints=websecure"
+      - "traefik.http.routers.agents.tls.certresolver=letsencrypt"
+      - "traefik.http.services.agents.loadbalancer.server.port=4318"
+      # WebSocket support
+      - "traefik.http.middlewares.agents-headers.headers.customrequestheaders.Connection=upgrade"
+      - "traefik.http.middlewares.agents-headers.headers.customrequestheaders.Upgrade=websocket"
+      - "traefik.http.routers.agents.middlewares=agents-headers"
+
+  web:
+    build: ../../main
+    environment:
+      NEXT_PUBLIC_WS_URL: wss://api.${DOMAIN}
+      NEXT_PUBLIC_API_URL: https://api.${DOMAIN}
+    depends_on:
+      - agents
+    networks:
+      - kyntrix
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.web.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
+      - "traefik.http.routers.web.entrypoints=websecure"
+      - "traefik.http.routers.web.tls.certresolver=letsencrypt"
+      - "traefik.http.services.web.loadbalancer.server.port=3000"
+
+  # Runtime daemon for executing user code
+  daemon:
+    build: ../../runtime
+    privileged: true  # Required for container namespaces
+    environment:
+      INGEST_URL: http://agents:4318
+    volumes:
+      - "/var/run/kyntrixd.sock:/var/run/kyntrixd.sock"
+      - "rootfs:/var/lib/kyntrix/rootfs"
+    networks:
+      - kyntrix
+    depends_on:
+      - agents
+
+networks:
+  kyntrix:
+    driver: bridge
+
+volumes:
+  pgdata: {}
+  redisdata: {}
+  letsencrypt: {}
+  rootfs: {}

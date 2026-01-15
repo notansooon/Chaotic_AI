@@ -15,7 +15,7 @@ import { otlpToTal, type TalEvent } from "../transforms/otlpToTal.js";
 export const otlpRouter = Router();
 
 // Standard OTLP traces endpoint (JSON format)
-otlpRouter.post("/v1/traces", async (req, res) => {
+otlpRouter.post("/traces", async (req, res) => {
     const startTime = Date.now();
 
     try {
@@ -76,7 +76,7 @@ otlpRouter.post("/v1/traces", async (req, res) => {
 });
 
 // Health check for OTLP endpoint
-otlpRouter.get("/v1/traces", (req, res) => {
+otlpRouter.get("/traces", (req, res) => {
     res.status(200).json({
         status: "ok",
         endpoint: "otlp/v1/traces",

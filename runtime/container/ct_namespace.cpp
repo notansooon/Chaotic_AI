@@ -21,6 +21,7 @@ struct ContainerArgs {
     std::string workspace_path;
     std::string entry_script;
     std::string rootfs_path;
+    std::string ingest_url;  // OTLP endpoint URL
 };
 
 
@@ -29,14 +30,16 @@ struct ContainerArgs {
 pid_t spawn_container(ContainerTemplate tmpl,
                         const std::string& run_id,
                         const std::string& workspace_path,
-                        const std::string& entry_script) {
+                        const std::string& entry_script,
+                        const std::string& ingest_url) {
     ContainerArgs* cargs = new ContainerArgs;
     cargs->tmpl          = tmpl;
     cargs->run_id        = run_id;
     cargs->workspace_path = workspace_path;
     cargs->entry_script  = entry_script;
+    cargs->ingest_url    = ingest_url.empty() ? "http://localhost:4318" : ingest_url;
 
-    // Prepare rootfs 
+    // Prepare rootfs
     cargs->rootfs_path   = prepare_rootfs_for_template(tmpl);
 
     // Allocate stack for clone
@@ -71,7 +74,7 @@ static int container_child_main(void* arg) {
     std::string resource_attrs = "kyntrix.run_id=" + cargs->run_id;
     ::setenv("OTEL_RESOURCE_ATTRIBUTES", resource_attrs.c_str(), 1);
 
-    ::setenv("OTEL_EXPORTER_OTLP_ENDPOINT", "http://agents:4318", 1);
+    ::setenv("OTEL_EXPORTER_OTLP_ENDPOINT", cargs->ingest_url.c_str(), 1);
     ::setenv("OTEL_EXPORTER_OTLP_PROTOCOL", "http/json", 1);
     ::setenv("OTEL_BSP_SCHEDULE_DELAY", "100", 1);  // Flush every 100ms
     ::setenv("OTEL_TRACES_EXPORTER", "otlp", 1);
