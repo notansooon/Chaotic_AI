@@ -65,24 +65,33 @@ static int container_child_main(void* arg) {
         return 1;
     }
 
-    ::setenv("KYNTRIX_RUN_ID", cargs->run_id.c_str(), 1);
-    ::setenv("KYNTRIX_INGEST_URL", "http://agents:8081/ingest/tal", 1);
-    ::setenv("KYNTRIX_BATCH_SIZE", "100", 1);
-    ::setenv("KYNTRIX_FLUSH_INTERVAL", "1000", 1);
+    // OpenTelemetry configuration
+    ::setenv("OTEL_SERVICE_NAME", "user-script", 1);
+
+    std::string resource_attrs = "kyntrix.run_id=" + cargs->run_id;
+    ::setenv("OTEL_RESOURCE_ATTRIBUTES", resource_attrs.c_str(), 1);
+
+    ::setenv("OTEL_EXPORTER_OTLP_ENDPOINT", "http://agents:4318", 1);
+    ::setenv("OTEL_EXPORTER_OTLP_PROTOCOL", "http/json", 1);
+    ::setenv("OTEL_BSP_SCHEDULE_DELAY", "100", 1);  // Flush every 100ms
+    ::setenv("OTEL_TRACES_EXPORTER", "otlp", 1);
+    ::setenv("OTEL_METRICS_EXPORTER", "none", 1);
+    ::setenv("OTEL_LOGS_EXPORTER", "none", 1);
 
     // Build argv - need to keep strings alive until execvp
     std::vector<std::string> arg_strings;
     std::vector<char*> argv;
 
     if (cargs->tmpl == ContainerTemplate::Node) {
-        ::setenv("NODE_OPTIONS", "--require /opt/kyntrix/node-embedded/dist/autoHook.js", 1);
+        // Node.js with OpenTelemetry auto-instrumentation
+        ::setenv("NODE_OPTIONS", "--require @opentelemetry/auto-instrumentations-node/register", 1);
 
         arg_strings.push_back("node");
         arg_strings.push_back("/workspace/" + cargs->entry_script);
     } else {
+        // Python with OpenTelemetry auto-instrumentation
+        arg_strings.push_back("opentelemetry-instrument");
         arg_strings.push_back("python");
-        arg_strings.push_back("-m");
-        arg_strings.push_back("kyntrix_agent.autohook");
         arg_strings.push_back("/workspace/" + cargs->entry_script);
     }
 
