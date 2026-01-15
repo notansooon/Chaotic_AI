@@ -1,0 +1,160 @@
+version: "3.9"
+
+# Kyntrix Production Deployment
+# Usage: docker compose -f docker-compose.prod.yml up -d
+# Requires: .env file with production secrets
+
+services:
+  # Reverse Proxy with automatic SSL
+  traefik:
+    image: traefik:v3.0
+    command:
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "letsencrypt:/letsencrypt"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.${DOMAIN}`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_DASHBOARD_AUTH}"
+    restart: unless-stopped
+    networks:
+      - kyntrix
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - kyntrix
+
+  # Redis for streaming and pub/sub
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - kyntrix
+
+  # Agents Server (Telemetry Ingest + Pipeline)
+  agents:
+    build:
+      context: ../..
+      dockerfile: servers/agents/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      HTTP_PORT: "4318"
+      NODE_ENV: production
+      SNAPSHOT_INTERVAL_MS: "5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      # OTLP endpoint for trace ingestion
+      - "traefik.http.routers.agents-otlp.rule=Host(`api.${DOMAIN}`) && PathPrefix(`/v1/traces`)"
+      - "traefik.http.routers.agents-otlp.entrypoints=websecure"
+      - "traefik.http.routers.agents-otlp.tls.certresolver=letsencrypt"
+      # API endpoints
+      - "traefik.http.routers.agents-api.rule=Host(`api.${DOMAIN}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.agents-api.entrypoints=websecure"
+      - "traefik.http.routers.agents-api.tls.certresolver=letsencrypt"
+      # WebSocket endpoint
+      - "traefik.http.routers.agents-ws.rule=Host(`api.${DOMAIN}`)"
+      - "traefik.http.routers.agents-ws.entrypoints=websecure"
+      - "traefik.http.routers.agents-ws.tls.certresolver=letsencrypt"
+      - "traefik.http.services.agents.loadbalancer.server.port=4318"
+    restart: unless-stopped
+    networks:
+      - kyntrix
+
+  # Web Frontend
+  web:
+    build:
+      context: ../../main
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_WS_URL: wss://api.${DOMAIN}
+        NEXT_PUBLIC_API_URL: https://api.${DOMAIN}
+    environment:
+      NEXT_PUBLIC_WS_URL: wss://api.${DOMAIN}
+      NEXT_PUBLIC_API_URL: https://api.${DOMAIN}
+    depends_on:
+      - agents
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.web.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
+      - "traefik.http.routers.web.entrypoints=websecure"
+      - "traefik.http.routers.web.tls.certresolver=letsencrypt"
+      - "traefik.http.services.web.loadbalancer.server.port=3000"
+      # Redirect www to non-www
+      - "traefik.http.middlewares.www-redirect.redirectregex.regex=^https://www\\.(.*)"
+      - "traefik.http.middlewares.www-redirect.redirectregex.replacement=https://$${1}"
+      - "traefik.http.routers.web.middlewares=www-redirect"
+    restart: unless-stopped
+    networks:
+      - kyntrix
+
+  # Runtime Daemon (optional - for managed execution)
+  # Uncomment if you want the runtime daemon in the same deployment
+  # daemon:
+  #   build:
+  #     context: ../..
+  #     dockerfile: runtime/Dockerfile
+  #   environment:
+  #     KYNTRIX_OTLP_ENDPOINT: http://agents:4318/v1/traces
+  #     KYNTRIX_WORKSPACE_DIR: /var/lib/kyntrix/workspaces
+  #   volumes:
+  #     - workspaces:/var/lib/kyntrix/workspaces
+  #   cap_add:
+  #     - SYS_ADMIN
+  #   security_opt:
+  #     - seccomp:unconfined
+  #   restart: unless-stopped
+  #   networks:
+  #     - kyntrix
+
+volumes:
+  pgdata: {}
+  redisdata: {}
+  letsencrypt: {}
+  # workspaces: {}
+
+networks:
+  kyntrix:
+    driver: bridge

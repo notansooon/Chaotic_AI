@@ -4,7 +4,7 @@ import { Command } from "commander"
 import { execSync } from "child_process"
 import fs from "fs/promises"
 import chalk from "chalk"
-import ora from "ora"
+import ora, { Ora } from "ora"
 import path from "path"
 
 const API_URL = process.env.KYNTRIX_API || 'http://localhost:3000';
@@ -287,7 +287,7 @@ async function resolveCommit(repoUrl: string, branch: string): Promise<string> {
     throw new Error('Could not resolve commit SHA');
 }
 
-async function executeGitBased(gitInfo: GitInfo, spinner: ora.Ora, options: any) {
+async function executeGitBased(gitInfo: GitInfo, spinner: Ora, options: any) {
     spinner.text = 'Submitting git-based execution...';
     
     const response = await fetch(`${API_URL}/runs/start`, {
@@ -306,7 +306,7 @@ async function executeGitBased(gitInfo: GitInfo, spinner: ora.Ora, options: any)
     await handleResponse(response, spinner, options);
 }
 
-async function executeFileBased(filePath: string, spinner: ora.Ora, options: any) {
+async function executeFileBased(filePath: string, spinner: Ora, options: any) {
     spinner.text = 'Collecting files...';
     
     // Original file upload implementation
@@ -326,7 +326,7 @@ async function executeFileBased(filePath: string, spinner: ora.Ora, options: any
     await handleResponse(response, spinner, options);
 }
 
-async function handleResponse(response: Response, spinner: ora.Ora, options: any) {
+async function handleResponse(response: Response, spinner: Ora, options: any) {
     if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Server error (${response.status}): ${errorText}`);
