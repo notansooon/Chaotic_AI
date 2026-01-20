@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { prisma } from "../db/client.js";
-import { exportForLLM, graphToLLMTrace, type ExportFormat } from "../pipeline/llm_export.js";
+import { exportForLLM, type ExportFormat } from "../pipeline/llm_export.js";
 import type { GraphDelta, Node, Edge } from "../pipeline/t2_correlator.js";
+import { authenticate, requireScopes, rateLimit } from "../auth/middleware.js";
 
 export const runRouter = Router();
 
@@ -9,33 +10,93 @@ runRouter.get("/health", (req, res) => {
     res.json({ ok: true });
 })
 
-runRouter.post("/dev/run", async (req, res) => {
+/**
+ * Create a new run (requires authentication)
+ */
+runRouter.post("/run", authenticate(), rateLimit(), requireScopes('run:create'), async (req, res) => {
+    const { label } = req.body;
+
     const run = await prisma.run.create({
-        data: {}
+        data: {
+            label,
+            userId: req.user!.id,
+        }
     })
-    res.json({ id: run.id, status: run.status, createdAt: run.createdAt })
+    res.status(201).json({ id: run.id, status: run.status, createdAt: run.createdAt })
 })
 
-runRouter.get("/run", async (req, res) => {
+/**
+ * List runs (requires authentication, shows only user's runs)
+ */
+runRouter.get("/run", authenticate(), rateLimit(), requireScopes('run:read'), async (req, res) => {
+    const { limit = 20, offset = 0 } = req.query;
+
     const runs = await prisma.run.findMany({
+        where: {
+            userId: req.user!.id,
+        },
         orderBy: {
             createdAt: 'desc'
         },
-        take: 20,
+        take: Math.min(Number(limit), 100),
+        skip: Number(offset),
     });
     res.json(runs);
+})
+
+/**
+ * Delete a run (requires authentication)
+ */
+runRouter.delete("/run/:runId", authenticate(), rateLimit(), requireScopes('run:delete'), async (req, res) => {
+    const { runId } = req.params;
+
+    // Verify ownership
+    const run = await prisma.run.findFirst({
+        where: {
+            id: runId,
+            userId: req.user!.id,
+        },
+    });
+
+    if (!run) {
+        return res.status(404).json({ error: 'Run not found' });
+    }
+
+    // Delete related data first (cascade)
+    await prisma.$transaction([
+        prisma.event.deleteMany({ where: { runId } }),
+        prisma.edge.deleteMany({ where: { runId } }),
+        prisma.node.deleteMany({ where: { runId } }),
+        prisma.snapshot.deleteMany({ where: { runId } }),
+        prisma.cursor.deleteMany({ where: { runId } }),
+        prisma.run.delete({ where: { id: runId } }),
+    ]);
+
+    res.json({ success: true, message: 'Run deleted' });
 })
 
 /**
  * Get graph data for a specific run
  * Returns the full graph with nodes and edges
  */
-runRouter.get("/run/:runId/graph", async (req, res) => {
+runRouter.get("/run/:runId/graph", authenticate(), rateLimit(), requireScopes('run:read'), async (req, res) => {
     const { runId } = req.params;
 
     try {
+        // Verify ownership
+        const run = await prisma.run.findFirst({
+            where: {
+                id: runId,
+                userId: req.user!.id,
+            },
+        });
+
+        if (!run) {
+            return res.status(404).json({ error: 'Run not found' });
+        }
+
         // Fetch nodes and edges from database
-        const [nodes, edges, run] = await Promise.all([
+        const [nodes, edges] = await Promise.all([
             prisma.node.findMany({
                 where: { runId },
                 orderBy: { num: 'asc' },
@@ -44,14 +105,7 @@ runRouter.get("/run/:runId/graph", async (req, res) => {
                 where: { runId },
                 orderBy: { createdSeq: 'asc' },
             }),
-            prisma.run.findUnique({
-                where: { id: runId },
-            }),
         ]);
-
-        if (!run) {
-            return res.status(404).json({ error: 'Run not found' });
-        }
 
         // Transform to GraphDelta format
         const graphNodes: Node[] = nodes.map(n => {
@@ -138,13 +192,25 @@ runRouter.get("/run/:runId/graph", async (req, res) => {
  * Get graph data formatted for LLM consumption
  * Supports multiple export formats: json, prompt, jsonld
  */
-runRouter.get("/run/:runId/llm", async (req, res) => {
+runRouter.get("/run/:runId/llm", authenticate(), rateLimit(), requireScopes('run:read'), async (req, res) => {
     const { runId } = req.params;
     const format = (req.query.format as ExportFormat) || 'json';
 
     try {
+        // Verify ownership
+        const run = await prisma.run.findFirst({
+            where: {
+                id: runId,
+                userId: req.user!.id,
+            },
+        });
+
+        if (!run) {
+            return res.status(404).json({ error: 'Run not found' });
+        }
+
         // Fetch nodes and edges from database
-        const [nodes, edges, run] = await Promise.all([
+        const [nodes, edges] = await Promise.all([
             prisma.node.findMany({
                 where: { runId },
                 orderBy: { num: 'asc' },
@@ -153,14 +219,7 @@ runRouter.get("/run/:runId/llm", async (req, res) => {
                 where: { runId },
                 orderBy: { createdSeq: 'asc' },
             }),
-            prisma.run.findUnique({
-                where: { id: runId },
-            }),
         ]);
-
-        if (!run) {
-            return res.status(404).json({ error: 'Run not found' });
-        }
 
         // Transform to GraphDelta format
         const graphNodes: Node[] = nodes.map(n => {
@@ -249,10 +308,22 @@ runRouter.get("/run/:runId/llm", async (req, res) => {
 /**
  * Get the latest snapshot for a run
  */
-runRouter.get("/run/:runId/snapshot", async (req, res) => {
+runRouter.get("/run/:runId/snapshot", authenticate(), rateLimit(), requireScopes('run:read'), async (req, res) => {
     const { runId } = req.params;
 
     try {
+        // Verify ownership
+        const run = await prisma.run.findFirst({
+            where: {
+                id: runId,
+                userId: req.user!.id,
+            },
+        });
+
+        if (!run) {
+            return res.status(404).json({ error: 'Run not found' });
+        }
+
         const snapshot = await prisma.snapshot.findFirst({
             where: { runId },
             orderBy: { ts: 'desc' },
@@ -268,4 +339,3 @@ runRouter.get("/run/:runId/snapshot", async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch snapshot' });
     }
 })
-
