@@ -7,24 +7,129 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
+// ============================================================================
+// BETTER AUTH MODELS
+// ============================================================================
 
-  instances Instance[]
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  name          String?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Billing & Tier
+  tier          String    @default("free") // free | pro | enterprise
+  stripeCustomerId String? @unique
+
+  // Relations
+  sessions      Session[]
+  accounts      Account[]
+  apiKeys       ApiKey[]
+  instances     Instance[]
+  runs          Run[]
 }
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  token        String   @unique
+  expiresAt    DateTime
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+}
+
+model Account {
+  id                    String   @id @default(uuid())
+  userId                String
+  accountId             String   // Provider's user ID
+  providerId            String   // github, google, etc.
+  accessToken           String?
+  refreshToken          String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+}
+
+model Verification {
+  id         String   @id @default(uuid())
+  identifier String   // email address
+  value      String   // verification token
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+}
+
+// ============================================================================
+// API KEY MODEL (for CLI authentication)
+// ============================================================================
+
+model ApiKey {
+  id          String    @id @default(uuid())
+  userId      String
+  name        String    // "My Laptop", "CI Server"
+
+  // Key storage (only store hash, prefix is for identification)
+  keyPrefix   String    // kyx_live_ or kyx_test_
+  keyHash     String    @unique // SHA-256 hash of the full key
+
+  // Permissions
+  scopes      String[]  @default(["run:create", "run:read", "run:delete"])
+
+  // Rate limiting
+  rateLimit   Int       @default(100) // requests per minute
+
+  // Usage tracking
+  lastUsedAt  DateTime?
+  lastUsedIp  String?
+  usageCount  Int       @default(0)
+
+  // Lifecycle
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime?
+  revokedAt   DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([keyHash])
+}
+
+// ============================================================================
+// EXISTING MODELS
+// ============================================================================
+
 model Instance {
   id        String   @id @default(uuid())
-  label    String
+  label     String
   createdAt DateTime @default(now())
   userId    String
-  user User @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }
-/// One traced execution (local MVP = single user)
+
+/// One traced execution
 model Run {
   id        String    @id @default(uuid())
+  userId    String?   // Owner of the run (null for anonymous/legacy)
   label     String?
   status    String    @default("running") // running | completed | error
   createdAt DateTime  @default(now())
@@ -37,25 +142,28 @@ model Run {
   snapshots Snapshot[]
   cursor    Cursor?
 
-
   // s3
-  s3EventsKey String? 
-  s3SnapshotPrefix String?
+  s3EventsKey       String?
+  s3SnapshotPrefix  String?
   s3ArtifactsPrefix String?
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
 /// Raw NDJSON events from the embedded agent (ordered by seq).
 model Event {
   id         String  @id @default(uuid())
   runId      String
-  seq        Int // global ordering (monotonic per run)
-  ts         BigInt // epoch micros or nanos (choose one)
-  kind       String // Call | Return | Line | IO | Metric | Error ...
+  seq        Int     // global ordering (monotonic per run)
+  ts         BigInt  // epoch micros or nanos (choose one)
+  kind       String  // Call | Return | Line | IO | Metric | Error ...
   span       String? // correlates Call<->Return (activation)
   parentSpan String?
   nodeKey    String? // optional stable key (file+func) for analytics
-  data       Json? // args, metrics, IO payload meta, etc.
-  code       Json? // { file, line, func, sourceMapId, digest }
+  data       Json?   // args, metrics, IO payload meta, etc.
+  code       Json?   // { file, line, func, sourceMapId, digest }
 
   run Run @relation(fields: [runId], references: [id])
 
@@ -67,17 +175,17 @@ model Event {
 model Node {
   id         String  @id @default(uuid())
   runId      String
-  num        Int // global chronological node number (1..N)
+  num        Int     // global chronological node number (1..N)
   span       String? // activation span id (if emitted)
   parentId   String? // optional parent call (immediate caller)
-  type       String // Function | External | IO | Service | DB | Group
+  type       String  // Function | External | IO | Service | DB | Group
   label      String? // UI label (short); graph shows number, panel shows this
   key        String? // optional stable entity key (file:func)
-  startedSeq Int // first event seq for this call
-  endedSeq   Int? // last event seq for this call
-  startedAt  BigInt // time the call began
+  startedSeq Int     // first event seq for this call
+  endedSeq   Int?    // last event seq for this call
+  startedAt  BigInt  // time the call began
   endedAt    BigInt? // time the call ended
-  props      Json? // counters (errors, bytes, duration, etc.)
+  props      Json?   // counters (errors, bytes, duration, etc.)
 
   run      Run    @relation(fields: [runId], references: [id])
   parent   Node?  @relation("CallParent", fields: [parentId], references: [id])
@@ -86,7 +194,7 @@ model Node {
   outgoing Edge[] @relation("FromNode")
   incoming Edge[] @relation("ToNode")
 
-  @@unique([runId, num]) // node number is unique within the run
+  @@unique([runId, num])
   @@index([runId, startedSeq])
 }
 
@@ -96,13 +204,13 @@ model Edge {
   runId          String
   fromNodeId     String
   toNodeId       String
-  ordinal        Int // (1..k) numbering restarts per fromNode
-  createdSeq     Int // seq of event that created this hop
-  createdLine    Int? // source line (if known)
+  ordinal        Int     // (1..k) numbering restarts per fromNode
+  createdSeq     Int     // seq of event that created this hop
+  createdLine    Int?    // source line (if known)
   createdFile    String? // source file (if known)
   kind           String? // calls | reads | writes | emits ...
   groupedUnderId String? // if this edge is inside a group, reference parent group edge
-  props          Json? // latency, size, status, counts...
+  props          Json?   // latency, size, status, counts...
 
   run      Run  @relation(fields: [runId], references: [id])
   fromNode Node @relation("FromNode", fields: [fromNodeId], references: [id])
@@ -138,7 +246,7 @@ model Snapshot {
   id    String   @id @default(uuid())
   runId String
   ts    DateTime @default(now())
-  graph Json // {nodes:[{num,...}], edges:[...], cursor:{...}}
+  graph Json     // {nodes:[{num,...}], edges:[...], cursor:{...}}
 
   run Run @relation(fields: [runId], references: [id])
 
