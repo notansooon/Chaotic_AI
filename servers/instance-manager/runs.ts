@@ -3,13 +3,13 @@ import { startInstance, stopInstance } from "./daemonClient";
 import { randomUUID } from "crypto";
 import fs from "fs";
 import path from "path";
-import { redis } from "../agents/storage/redis"
+import { redis, REDIS_URL } from "../agents/storage/redis"
+import Redis from "ioredis";
 
 export const runsRouter = Router();
 
-// Redis subscriber for listening to completion events
-// const redisSubscriber = createClient();
-// redisSubscriber.connect().catch(console.error);
+// Redis subscriber for listening to completion events (separate connection required for pub/sub)
+const redisSubscriber = new Redis(REDIS_URL, { lazyConnect: false });
 
 /**
  * Write files to disk (for file-upload mode)
@@ -90,7 +90,7 @@ runsRouter.post("/start", async (req, res) => {
 
         // Setup Redis subscription for completion notification
         const channel = `run:${runId}:complete`;
-        
+
         const completionPromise = new Promise((resolve, reject) => {
             // Safety timeout
             const timeout = setTimeout(() => {
@@ -98,17 +98,26 @@ runsRouter.post("/start", async (req, res) => {
                 reject(new Error("Execution timed out after 30s"));
             }, 30000);
 
-            // Listen for completion from T2 Correlator
-            redisSubscriber.subscribe(channel, (message) => {
+            // Listen for completion from T2 Correlator (ioredis API)
+            const messageHandler = (ch: string, message: string) => {
+                if (ch !== channel) return;
                 clearTimeout(timeout);
                 redisSubscriber.unsubscribe(channel);
-                
+                redisSubscriber.off('message', messageHandler);
+
                 try {
                     const result = JSON.parse(message);
                     resolve(result);
                 } catch (err) {
                     reject(new Error("Failed to parse completion message"));
                 }
+            };
+
+            redisSubscriber.on('message', messageHandler);
+            redisSubscriber.subscribe(channel).catch((err) => {
+                clearTimeout(timeout);
+                redisSubscriber.off('message', messageHandler);
+                reject(err);
             });
         });
 
