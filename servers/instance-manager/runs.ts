@@ -3,13 +3,13 @@ import { startInstance, stopInstance } from "./daemonClient";
 import { randomUUID } from "crypto";
 import fs from "fs";
 import path from "path";
-import { createClient } from "redis";
+import { redis } from "../agents/storage/redis"
 
 export const runsRouter = Router();
 
 // Redis subscriber for listening to completion events
-const redisSubscriber = createClient();
-redisSubscriber.connect().catch(console.error);
+// const redisSubscriber = createClient();
+// redisSubscriber.connect().catch(console.error);
 
 /**
  * Write files to disk (for file-upload mode)
@@ -216,15 +216,9 @@ runsRouter.get("/api/v1/trace/:runId", async (req, res) => {
     try {
         const { runId } = req.params;
         
-        // In production, you'd fetch this from a database or cache
-        // For now, try to get from Redis
-        const redisClient = createClient();
-        await redisClient.connect();
-        
         const traceKey = `trace:${runId}`;
-        const traceData = await redisClient.get(traceKey);
+        const traceData = await redis.get(traceKey);
         
-        await redisClient.disconnect();
         
         if (!traceData) {
             return res.status(404).json({

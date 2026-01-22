@@ -22,13 +22,13 @@ app.use(cors({
     credentials: true,
 }));
 
-app.use(express.json({ limit: '10mb' }));  // OTLP payloads can be large
+app.use(express.json({ limit: '10mb' }));  
 
 // Route registrations
-app.use("/", authRouter);                // Auth at root (handles /auth/*, /api-keys, etc.)
-app.use("/ingest", ingestRouter);        // Legacy TAL ingest
-app.use("/", otlpRouter);                // OTLP ingest at /v1/traces
-app.use("/api", runRouter);              // Run management
+app.use("/", authRouter);                
+app.use("/ingest", ingestRouter);       
+app.use("/", otlpRouter);                
+app.use("/api", runRouter);              
 
 // Health check
 app.get("/health", (req, res) => {

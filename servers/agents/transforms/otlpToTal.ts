@@ -80,7 +80,11 @@ export interface TalEvent {
  * Extract primitive value from OTLP attribute value
  */
 function extractValue(value: OtlpAttributeValue): any {
-    if (value.stringValue !== undefined) return value.stringValue;
+    if (value.stringValue !== undefined) {
+        return value.stringValue;
+
+    }
+        
     if (value.intValue !== undefined) return parseInt(value.intValue, 10);
     if (value.boolValue !== undefined) return value.boolValue;
     if (value.doubleValue !== undefined) return value.doubleValue;
