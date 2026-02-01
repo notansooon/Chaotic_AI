@@ -5,9 +5,14 @@ FROM alpine:3.19 AS builder
 RUN apk add --no-cache \
     build-base \
     cmake \
-    linux-headers
+    linux-headers \
+    make \
+    g++
 
 WORKDIR /app
+
+# Copy CMakeLists.txt first
+COPY CMakeLists.txt ./
 
 # Copy external dependencies (nlohmann json)
 COPY external/ ./external/
@@ -15,12 +20,17 @@ COPY external/ ./external/
 # Copy runtime source code
 COPY runtime/ ./runtime/
 
-# Copy CMakeLists.txt
-COPY CMakeLists.txt ./
+# List files to verify copy worked
+RUN echo "=== Checking copied files ===" && \
+    ls -la && \
+    ls -la runtime/ && \
+    ls -la runtime/daemon/ && \
+    ls -la runtime/container/ && \
+    ls -la external/nlohmann/
 
 # Build the daemon
-RUN mkdir build && cd build && \
-    cmake .. -DCMAKE_BUILD_TYPE=Release && \
+RUN mkdir -p build && cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE=ON && \
     cmake --build . --target kyntrixd -j$(nproc)
 
 # Production stage
@@ -44,8 +54,6 @@ RUN chmod +x /usr/local/bin/kyntrixd
 
 # The daemon needs to run as root for namespace operations
 USER root
-
-EXPOSE 7091
 
 # Run the daemon with configurable socket path
 CMD ["kyntrixd", "/var/run/kyntrix/daemon.sock"]
