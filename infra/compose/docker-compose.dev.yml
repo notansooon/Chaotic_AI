@@ -19,7 +19,7 @@ services:
     ports: ["7090:7090"]
 
   web:
-    build: ../../web
+    build: ../../main
     environment:
       NEXT_PUBLIC_WS_URL: ws://localhost:7090/graph/stream
       API_BASE_URL: http://localhost:7090

@@ -3,13 +3,14 @@ import { startInstance, stopInstance } from "./daemonClient";
 import { randomUUID } from "crypto";
 import fs from "fs";
 import path from "path";
-import { redis } from "../agents/storage/redis"
+import { Redis } from "ioredis";
+import { redis, REDIS_URL } from "../agents/storage/redis"
+import { lazy } from "better-auth/*";
 
 export const runsRouter = Router();
 
-// Redis subscriber for listening to completion events
-// const redisSubscriber = createClient();
-// redisSubscriber.connect().catch(console.error);
+const redisSubscriber = new Redis(REDIS_URL, {lazyConnect: true})
+re
 
 /**
  * Write files to disk (for file-upload mode)
