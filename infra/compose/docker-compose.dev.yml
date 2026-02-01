@@ -48,6 +48,21 @@ services:
       - "7090:7090"
     restart: unless-stopped
 
+  daemon:
+    build:
+      context: ../..
+      dockerfile: runtime/Dockerfile
+    privileged: true
+    volumes:
+      - daemon_socket:/var/run/kyntrix
+      - /tmp/kyntrix:/tmp/kyntrix
+    healthcheck:
+      test: ["CMD-SHELL", "test -S /var/run/kyntrix/daemon.sock"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
   instance-manager:
     build:
       context: ../..
@@ -59,6 +74,8 @@ services:
       NODE_ENV: production
     depends_on:
       redis:
+        condition: service_healthy
+      daemon:
         condition: service_healthy
     ports:
       - "3001:3001"
