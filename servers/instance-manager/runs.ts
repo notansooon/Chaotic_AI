@@ -4,13 +4,12 @@ import { randomUUID } from "crypto";
 import fs from "fs";
 import path from "path";
 import { Redis } from "ioredis";
-import { redis, REDIS_URL } from "../agents/storage/redis"
-import { lazy } from "better-auth/*";
+import { redis, REDIS_URL } from "../agents/storage/redis";
 
 export const runsRouter = Router();
 
 const redisSubscriber = new Redis(REDIS_URL, {lazyConnect: true})
-re
+
 
 /**
  * Write files to disk (for file-upload mode)
@@ -95,21 +94,29 @@ runsRouter.post("/start", async (req, res) => {
         const completionPromise = new Promise((resolve, reject) => {
             // Safety timeout
             const timeout = setTimeout(() => {
-                redisSubscriber.unsubscribe(channel);
+                redisSubscriber.off('message', onMessage);
+                redisSubscriber.unsubscribe(channel).catch(() => {});
                 reject(new Error("Execution timed out after 30s"));
             }, 30000);
 
-            // Listen for completion from T2 Correlator
-            redisSubscriber.subscribe(channel, (message) => {
+            const onMessage = (receivedChannel: string, message: string) => {
+                if (receivedChannel !== channel) return;
                 clearTimeout(timeout);
-                redisSubscriber.unsubscribe(channel);
-                
+                redisSubscriber.off('message', onMessage);
+                redisSubscriber.unsubscribe(channel).catch(() => {});
                 try {
                     const result = JSON.parse(message);
                     resolve(result);
                 } catch (err) {
                     reject(new Error("Failed to parse completion message"));
                 }
+            };
+
+            redisSubscriber.on('message', onMessage);
+            redisSubscriber.subscribe(channel).catch((err) => {
+                clearTimeout(timeout);
+                redisSubscriber.off('message', onMessage);
+                reject(err);
             });
         });
 
@@ -150,12 +157,13 @@ runsRouter.post("/start", async (req, res) => {
         const executionResult = await completionPromise;
 
         // Build response in format CLI expects
+        const result = executionResult as Record<string, any>;
         const response = {
             runId: runId,
-            status: executionResult.status || "success",
-            output: executionResult.output || "",
-            error: executionResult.error,
-            timeline: executionResult.timeline || [],
+            status: result.status || "success",
+            output: result.output || "",
+            error: result.error,
+            timeline: result.timeline || [],
             trace_url: `http://localhost:3000/trace/${runId}`,
             cache_hit: cacheHit
         };

@@ -8,6 +8,7 @@
  * - Session management
  */
 
+import { randomUUID } from 'crypto';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { prisma } from '../db/client.js';
@@ -63,7 +64,7 @@ export const auth = betterAuth({
 
     // Advanced options
     advanced: {
-        generateId: () => crypto.randomUUID(),
+        generateId: () => randomUUID(),
     },
 
     // Trusted origins for CORS

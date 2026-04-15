@@ -46,7 +46,8 @@ export async function ensureRun(runId: string): Promise<void> {
 export async function persistNodes(
     runId: string,
     nodes: Node[],
-    persistState: PersistenceState
+    persistState: PersistenceState,
+    state: GraphState
 ): Promise<number> {
     const newNodes = nodes.filter(n => !persistState.persistedNodes.has(n.id));
 
@@ -54,12 +55,18 @@ export async function persistNodes(
         return 0;
     }
 
-    const createData = newNodes.map(node => ({
+    const createData = newNodes.map(node => {
+        // Resolve parentId from spanToNode using the node's parentSpan
+        const parentId = node.parentSpan
+            ? (state.spanToNode.get(node.parentSpan) ?? null)
+            : null;
+
+        return {
         id: node.id,
         runId,
         num: node.num,
         span: node.span,
-        parentId: null, // Will be updated after all nodes exist
+        parentId,
         type: node.type,
         label: node.label,
         key: node.key,
@@ -75,7 +82,8 @@ export async function persistNodes(
             kind: node.kind,
             data: node.data,
         },
-    }));
+        };
+    });
 
     await prisma.node.createMany({
         data: createData,
@@ -266,7 +274,7 @@ export async function persistGraph(
     const edges = state.edges;
 
     // Persist new nodes and edges
-    const nodesCreated = await persistNodes(runId, nodes, persistState);
+    const nodesCreated = await persistNodes(runId, nodes, persistState, state);
     const edgesCreated = await persistEdges(runId, edges, persistState);
 
     // Update completed nodes

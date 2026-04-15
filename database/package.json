@@ -10,9 +10,12 @@
     "prisma:deploy": "prisma migrate deploy"
   },
   "devDependencies": {
-    "prisma": "^5.22.0"
+    "@types/pg": "^8.11.0",
+    "prisma": "^6.0.0"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0"
+    "@prisma/adapter-pg": "^6.0.0",
+    "@prisma/client": "^6.0.0",
+    "pg": "^8.13.0"
   }
 }

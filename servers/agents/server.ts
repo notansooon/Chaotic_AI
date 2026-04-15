@@ -6,6 +6,7 @@ import { ingestRouter } from './routers/ingest.js';
 import { otlpRouter } from './routers/otlp.js';
 import { runRouter } from './routers/run.js';
 import { authRouter } from './routers/auth.js';
+import { reflectionRouter } from './routers/reflection.js';
 import { attachWebSocketServer } from './ws/hub.js';
 
 dotenv.config();
@@ -25,13 +26,14 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));  
 
 // Route registrations
-app.use("/", authRouter);                
-app.use("/ingest", ingestRouter);       
-app.use("/", otlpRouter);                
-app.use("/api", runRouter);              
+app.use("/", authRouter);
+app.use("/ingest", ingestRouter);
+app.use("/", otlpRouter);
+app.use("/api", runRouter);
+app.use("/api", reflectionRouter);
 
 // Health check
-app.get("/health", (req, res) => {
+app.get("/health", (_req, res) => {
     res.json({ status: "ok", service: "agents" });
 });
 

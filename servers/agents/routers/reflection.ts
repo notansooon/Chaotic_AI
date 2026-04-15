@@ -1,10 +1,7 @@
-import { Router } from "express"
-
-
+import { Router } from "express";
 
 export const reflectionRouter = Router();
 
-
-reflectionRouter.post("reflection", (req, res) => {
-           
-})
+reflectionRouter.post("/reflection", (_req, res) => {
+    res.status(200).json({ ok: true });
+});

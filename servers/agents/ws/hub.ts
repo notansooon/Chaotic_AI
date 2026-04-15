@@ -2,16 +2,10 @@ import dotenv from 'dotenv';
 import http from 'http';
 import url from 'url';
 import WebSocket, { WebSocketServer } from 'ws';
-import { Redis } from 'ioredis'
-import { channel } from 'diagnostics_channel';
-import { error } from 'console';
+import { Redis } from 'ioredis';
 dotenv.config();
 
-const REDIS_URL = process.env.REDIS_URL;
-const WS_PORT = Number(process.env.WS_PORT);
-
-
-const subscribers = new Map<string, Set<Client>>();
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 
 const sub = new Redis(REDIS_URL, { lazyConnect: false });
 
@@ -49,7 +43,7 @@ export const attachWebSocketServer = (server: http.Server) => {
         }
     });
 
-    wss.on('connection', (ws, req) => {
+    wss.on('connection', (ws: WebSocket, req: http.IncomingMessage) => {
         const { query } = url.parse(req.url || '', true);
         const runId = query.runId as string;
 
